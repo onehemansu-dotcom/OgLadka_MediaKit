@@ -7,7 +7,7 @@
   var targets = [];
   document.querySelectorAll('main > section:not(.hero)').forEach(function (s) {
     Array.prototype.forEach.call(s.children, function (c) {
-      if (c.classList.contains('reels')) {
+      if (c.classList.contains('reels') || c.classList.contains('collabs')) {
         Array.prototype.forEach.call(c.children, function (r, i) { r.style.transitionDelay = (i * 80) + 'ms'; targets.push(r); });
       } else { targets.push(c); }
     });
@@ -63,6 +63,38 @@
     entries.forEach(function (e) { if (e.isIntersecting) setActive(e.target.id); });
   }, { rootMargin: '-40% 0px -55% 0px' });
   tabs.forEach(function (t) { var s = document.getElementById(t.dataset.tab); if (s) io.observe(s); });
+})();
+
+// Most loved videos: each slot switches between its Reels every 3 seconds.
+(function () {
+  var wrap = document.querySelector('.reels-rotating');
+  if (!wrap) return;
+  var slots = Array.prototype.slice.call(wrap.querySelectorAll('.reel-slot'));
+  wrap.classList.add('js-rot');
+  var step = 0, paused = false;
+  function show(i, stagger) {
+    slots.forEach(function (s, n) {
+      setTimeout(function () {
+        var kids = s.children, k = i % kids.length;
+        for (var c = 0; c < kids.length; c++) {
+          var on = c === k;
+          kids[c].classList.toggle('is-on', on);
+          kids[c].setAttribute('aria-hidden', on ? 'false' : 'true');
+          if (on) kids[c].removeAttribute('tabindex'); else kids[c].setAttribute('tabindex', '-1');
+        }
+      }, stagger ? n * 160 : 0);
+    });
+  }
+  show(0, false);
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  setInterval(function () {
+    if (paused || document.hidden) return;
+    step++; show(step, true);
+  }, 3000);
+  wrap.addEventListener('mouseenter', function () { paused = true; });
+  wrap.addEventListener('mouseleave', function () { paused = false; });
+  wrap.addEventListener('focusin', function () { paused = true; });
+  wrap.addEventListener('focusout', function () { paused = false; });
 })();
 
 // Nav bar: fades out when you scroll down, comes back when you scroll up.

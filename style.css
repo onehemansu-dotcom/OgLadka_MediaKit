@@ -271,3 +271,32 @@ body{overflow-x:hidden}
   .seg a:not(.on):hover{color:var(--ink)}
 }
 @media print{ .reveal{opacity:1 !important;transform:none !important} .hero > *{animation:none !important} }
+
+/* ---------- Most loved videos: rotating slots ---------- */
+.reel-slot{display:grid;min-width:0}
+.reel-slot > .reel{grid-area:1 / 1;min-width:0}
+.reel-slot > .reel:not(:first-child){opacity:0;pointer-events:none}
+.js-rot .reel-slot > .reel{opacity:0;transform:translateY(8px) scale(.985);pointer-events:none;
+  transition:opacity .9s ease,transform .9s cubic-bezier(.2,.7,.2,1)}
+.js-rot .reel-slot > .reel.is-on{opacity:1;transform:none;pointer-events:auto}
+@media (prefers-reduced-motion:reduce){ .js-rot .reel-slot > .reel{transition:none;transform:none} }
+@media print{
+  .reel-slot{display:contents}
+  .reel-slot > .reel,.js-rot .reel-slot > .reel{grid-area:auto !important;opacity:1 !important;transform:none !important;pointer-events:auto}
+  main.single .reels{row-gap:14px}
+}
+
+/* ---------- Brand collaborations: 4 in a row ---------- */
+.collabs{margin-top:20px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (min-width:760px){ .collabs{gap:16px} }
+.collab{display:flex;flex-direction:column;gap:8px;min-width:0}
+.collab .thumb{border-radius:14px}
+.collab .badge{position:absolute;left:8px;bottom:8px;width:28px;height:28px;border-radius:50%;object-fit:cover;inset:auto auto 8px 8px;
+  box-shadow:0 0 0 2px rgba(255,255,255,.9),0 2px 6px rgba(0,0,0,.25);z-index:1}
+.collab .reel-title{font-size:14px;line-height:1.3;font-weight:500}
+@media (max-width:420px){
+  .collab .reel-title{font-size:13px}
+  .collab .reel-meta{font-size:11px}
+  .collab .badge{width:22px;height:22px;left:6px;bottom:6px;inset:auto auto 6px 6px}
+}
+@media print{ .collabs{max-width:440px;gap:10px} }
