@@ -6,7 +6,17 @@
   --inv-btn:#FFFFFF; --inv-btn-ink:#141414;
   color-scheme:light;
 }
-/* Dark version: add data-theme="dark" to <html> */
+/* Follows the device: dark when the phone or laptop is in dark mode */
+@media (prefers-color-scheme: dark){
+:root:not([data-theme="light"]){
+  --ground:#000000; --surface:#161616; --fill:#1F1F1F; --tile:#242424;
+  --ink:#F2F2F2; --sub:#A0A0A0; --line:#262626;
+  --bar:rgba(0,0,0,.72); --seg:#1C1C1C; --seg-on:#3A3A3A; --seg-shadow:none;
+  --inv:#F2F2F2; --inv-ink:#111111; --inv-sub:#5E5E5E; --inv-line:rgba(0,0,0,.12);
+  --inv-btn:#111111; --inv-btn-ink:#F2F2F2;
+  color-scheme:dark;
+}
+}
 :root[data-theme="dark"]{
   --ground:#000000; --surface:#161616; --fill:#1F1F1F; --tile:#242424;
   --ink:#F2F2F2; --sub:#A0A0A0; --line:#262626;
@@ -189,7 +199,7 @@ footer{text-align:center;font-size:13px;color:var(--sub)}
   .pc-contact{padding:40px 48px 44px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 20px;font-size:13px}
   .pc-contact span{display:block;color:#A8A8A8;margin-bottom:2px}
   .pc-date{grid-column:1 / -1;margin-top:14px;color:#8A8A8A}
-  :root,:root[data-theme="dark"]{
+  :root,:root[data-theme="dark"],:root:not([data-theme="light"]){
     --ground:#FFFFFF;--surface:#F4F4F4;--fill:#E8E8E8;--tile:#FFFFFF;--ink:#141414;--sub:#555555;--line:#E2E2E2;
     --inv:#141414;--inv-ink:#F4F4F4;--inv-sub:#A8A8A8;--inv-line:rgba(255,255,255,.14);
   }
