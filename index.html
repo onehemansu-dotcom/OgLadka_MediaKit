@@ -18,14 +18,27 @@
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="OG Ladka media kit with three Reel thumbnails" />
 <meta name="twitter:card" content="summary_large_image" />
-<link rel="icon" href="favicon.ico" sizes="any" />
-<link rel="icon" href="favicon.svg" type="image/svg+xml" />
-<link rel="apple-touch-icon" href="apple-touch-icon.png" />
-<meta name="apple-mobile-web-app-title" content="OG Ladka" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
 <link rel="stylesheet" href="style.css" />
+<!-- Analytics: same GA4 property and Clarity project as the link-in-bio site (same domain).
+     Media kit traffic is tagged "Media Kit" so it can be filtered in both. -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-GYS2RWZJ4T"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-GYS2RWZJ4T', { send_page_view: true, content_group: 'Media Kit' });
+</script>
+<script>
+  (function(c,l,a,r,i,t,y){
+    c[a]=c[a]||function(){(c[a].q=c[a].q||[]).push(arguments)};
+    t=l.createElement(r);t.async=1;t.src="https://www.clarity.ms/tag/"+i;
+    y=l.getElementsByTagName(r)[0];y.parentNode.insertBefore(t,y);
+  })(window,document,"clarity","script","xbnj8ij4lf");
+  clarity("set", "site_section", "Media Kit");
+</script>
 </head>
 <body>
 
@@ -56,23 +69,23 @@
     <div><span>WhatsApp</span>+91 76763 37153</div>
     <div><span>Email</span>onehemansu@gmail.com</div>
     <div><span>Instagram</span>@ogladkaa</div>
-    <div class="pc-date">Updated Oct 10, 2026. Refreshed every 10 days.</div>
+    <div class="pc-date">Updated Oct 1, 2026. Refreshed every 10 days.</div>
   </div>
 </div>
 
 <header class="bar">
   <nav class="seg" aria-label="Sections">
-    <a href="#about" data-tab="about" class="on">About</a>
-    <a href="#numbers" data-tab="numbers">Numbers</a>
-    <a href="#work" data-tab="work">Work</a>
-    <a href="#rates" data-tab="rates">Rates</a>
+    <a data-label="Nav: About" data-category="Navigation" href="#about" data-tab="about" class="on">About</a>
+    <a data-label="Nav: Numbers" data-category="Navigation" href="#numbers" data-tab="numbers">Numbers</a>
+    <a data-label="Nav: Work" data-category="Navigation" href="#work" data-tab="work">Work</a>
+    <a data-label="Nav: Rates" data-category="Navigation" href="#rates" data-tab="rates">Rates</a>
   </nav>
 </header>
 
 <main class="single">
 
   <!-- 1. ABOUT -->
-  <section id="about" class="hero">
+  <section data-section="About" id="about" class="hero">
     <div>
       <h1 class="name">Hi, I'm Hemansu.</h1>
       <div class="place">Automotive creator, OG Ladka. Bangalore.</div>
@@ -86,15 +99,15 @@
   </section>
 
   <!-- 2. NUMBERS -->
-  <section id="numbers">
+  <section data-section="Numbers" id="numbers">
     <h2 class="h2">Numbers</h2>
-    <p class="lead">From Instagram insights, refreshed every 10 days. Last refresh Oct 10, 2026.</p>
+    <p class="lead">From Instagram insights, refreshed every 10 days. Last refresh Oct 1, 2026.</p>
     <div class="group">
-      <div class="row row-kv"><span>Followers</span><span class="v">71.5K</span></div>
-      <div class="row row-kv"><span>Views, last 30 days</span><span class="v">2.1M</span></div>
-      <div class="row row-kv"><span>Accounts reached, last 30 days</span><span class="v">1.51M</span></div>
-      <div class="row row-kv"><span>Views from non-followers</span><span class="v">96%</span></div>
-      <div class="row row-kv"><span>Median views, last 10 Reels</span><span class="v">69K</span></div>
+      <div class="row row-kv"><span>Followers</span><span class="v">71.8K</span></div>
+      <div class="row row-kv"><span>Views, last 30 days</span><span class="v">2.2M</span></div>
+      <div class="row row-kv"><span>Accounts reached, last 30 days</span><span class="v">1.37M</span></div>
+      <div class="row row-kv"><span>Views from non-followers</span><span class="v">93.8%</span></div>
+      <div class="row row-kv"><span>Median views, last 10 Reels</span><span class="v">68K</span></div>
       <div class="row row-kv"><span>Engagement, last 10 Reels</span><span class="v">5.2%</span></div>
       <div class="row row-kv"><span>Audience</span><span class="v">Mostly male, 18–35</span></div>
       <div class="row row-col">
@@ -107,69 +120,69 @@
   </section>
 
   <!-- 3. MOST LOVED VIDEOS (each slot switches between two Reels every 3 seconds) -->
-  <section id="work">
+  <section data-section="Most Loved Videos" id="work">
     <h2 class="h2">Most loved videos</h2>
     <p class="lead">Non-sponsored videos my audience watched and saved the most.</p>
     <div class="reels reels-rotating">
       <div class="reel-slot">
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/DVObL38CSEV/" target="_blank" rel="noopener">
+        <a data-label="Video: Matte Paint Care" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/DVObL38CSEV/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-matte.webp" alt="Matte paint care Reel thumbnail" /></div>
           <div class="reel-title">Matte paint care</div>
           <div class="reel-meta">2.7M views</div>
         </a>
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/Da3FWCEpRuM/" target="_blank" rel="noopener">
+        <a data-label="Video: Iridium Spark Plug" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/Da3FWCEpRuM/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-iridium.webp" alt="Iridium spark plug Reel thumbnail" /></div>
           <div class="reel-title">Iridium spark plug?</div>
-          <div class="reel-meta">875K views</div>
+          <div class="reel-meta">835K views</div>
         </a>
       </div>
       <div class="reel-slot">
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/DWRpaDoNwxY/" target="_blank" rel="noopener">
+        <a data-label="Video: Gear Shifting Guide" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/DWRpaDoNwxY/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-gear.webp" alt="Gear shifting guide Reel thumbnail" /></div>
           <div class="reel-title">Gear shifting guide</div>
-          <div class="reel-meta">2.4M views</div>
+          <div class="reel-meta">2.3M views</div>
         </a>
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/DUyRCN9Es59/" target="_blank" rel="noopener">
+        <a data-label="Video: Engine Braking Explained" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/DUyRCN9Es59/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-engine-braking.webp" alt="Engine braking explained Reel thumbnail" /></div>
           <div class="reel-title">Engine braking explained</div>
-          <div class="reel-meta">1.6M views</div>
+          <div class="reel-meta">1.5M views</div>
         </a>
       </div>
       <div class="reel-slot">
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/DcObLzBJJzY/" target="_blank" rel="noopener">
+        <a data-label="Video: Insurance Rejected" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/DcObLzBJJzY/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-insurance.webp" alt="Insurance rejected Reel thumbnail" /></div>
           <div class="reel-title">Insurance rejected</div>
-          <div class="reel-meta">325K views</div>
+          <div class="reel-meta">314K views</div>
         </a>
-        <a class="reel" href="https://www.instagram.com/ogladkaa/reel/DVlsLxeCf6Q/" target="_blank" rel="noopener">
+        <a data-label="Video: How to Legally Wrap a Bike" data-category="Video" class="reel" href="https://www.instagram.com/ogladkaa/reel/DVlsLxeCf6Q/" target="_blank" rel="noopener">
           <div class="thumb"><img src="images/reel-wrap.webp" alt="How to legally wrap a bike Reel thumbnail" /></div>
           <div class="reel-title">How to legally wrap a bike</div>
-          <div class="reel-meta">918K views</div>
+          <div class="reel-meta">917K views</div>
         </a>
       </div>
     </div>
   </section>
 
   <!-- 4. BRAND COLLABORATIONS -->
-  <section>
+  <section data-section="Brand Collaborations">
     <h2 class="h2">Brand collaborations</h2>
     <div class="collabs">
-      <a class="reel collab" href="https://www.instagram.com/reel/DTuy4o8Cfy8/" target="_blank" rel="noopener">
+      <a data-label="Collab: KTM" data-category="Collab" class="reel collab" href="https://www.instagram.com/reel/DTuy4o8Cfy8/" target="_blank" rel="noopener">
         <div class="thumb"><img src="images/collab-ktm.webp" alt="KTM collaboration Reel thumbnail" /><img class="badge" src="images/brand-ktm.webp" alt="" /></div>
         <div class="reel-title">KTM</div>
         <div class="reel-meta">160 Duke and RC launch</div>
       </a>
-      <a class="reel collab" href="https://www.instagram.com/reel/DLb-AX2pDCp/" target="_blank" rel="noopener">
+      <a data-label="Collab: Triumph" data-category="Collab" class="reel collab" href="https://www.instagram.com/reel/DLb-AX2pDCp/" target="_blank" rel="noopener">
         <div class="thumb"><img src="images/collab-triumph.webp" alt="Triumph collaboration Reel thumbnail" /><img class="badge" src="images/brand-triumph.webp" alt="" /></div>
         <div class="reel-title">Triumph</div>
         <div class="reel-meta">400cc range launch</div>
       </a>
-      <a class="reel collab" href="https://www.instagram.com/reel/DcgdTK8hUYI/" target="_blank" rel="noopener">
+      <a data-label="Collab: Royal Enfield" data-category="Collab" class="reel collab" href="https://www.instagram.com/reel/DcgdTK8hUYI/" target="_blank" rel="noopener">
         <div class="thumb"><img src="images/collab-re.webp" alt="Royal Enfield collaboration Reel thumbnail" /><img class="badge" src="images/brand-royalenfield.webp" alt="" /></div>
         <div class="reel-title">Royal Enfield</div>
         <div class="reel-meta">Guerrilla 450 first ride</div>
       </a>
-      <a class="reel collab" href="https://www.instagram.com/reel/DdMNz_6pp-P/" target="_blank" rel="noopener">
+      <a data-label="Collab: Car101" data-category="Collab" class="reel collab" href="https://www.instagram.com/reel/DdMNz_6pp-P/" target="_blank" rel="noopener">
         <div class="thumb"><img src="images/collab-car101.webp" alt="Car101 collaboration Reel thumbnail" /><img class="badge" src="images/brand-car101.webp" alt="" /></div>
         <div class="reel-title">Car101</div>
         <div class="reel-meta">Tyre polish integration</div>
@@ -178,12 +191,12 @@
   </section>
 
   <!-- 5. RATES -->
-  <section id="rates">
+  <section data-section="Rates" id="rates">
     <h2 class="h2">Rates</h2>
     <div class="group">
       <div class="row row-kv"><div><div class="row-title">Integrated Reel</div><div class="row-desc">Up to 60 seconds</div></div><span class="price">from ₹29,999</span></div>
     </div>
-    <p class="honest">Based on 69K median views across my last 10 Reels. Works out to ₹0.43 per view and ₹8.29 per engagement.</p>
+    <p class="honest">Based on 68K median views across my last 10 Reels. Works out to ₹0.44 per view and ₹8.40 per engagement.</p>
 
     <div class="keep">
       <h3 class="h3 sub-h">Other formats and add-ons</h3>
@@ -206,7 +219,7 @@
   </section>
 
   <!-- 6. PROCESS -->
-  <section>
+  <section data-section="How We Work">
     <h2 class="h2">How we'll work together</h2>
     <div class="group">
       <div class="row step"><span class="step-n">1</span><div><div class="row-title">Brief</div><div class="row-desc">You share the product or service and the goal. I try it out and suggest a format that fits.</div></div></div>
@@ -217,7 +230,7 @@
   </section>
 
   <!-- 7. GOOD TO KNOW -->
-  <section class="keep">
+  <section data-section="Good to Know" class="keep">
     <h2 class="h2">Good to know</h2>
     <div class="group">
       <div class="row row-col">
@@ -231,31 +244,31 @@
   </section>
 
   <!-- CONTACT -->
-  <section id="contact" class="contact">
+  <section data-section="Contact" id="contact" class="contact">
     <div>
       <h2>Let's work together.</h2>
       <p>WhatsApp is the quickest way to reach me.</p>
     </div>
     <div class="contact-actions">
-      <a class="btn btn-inv js-wa" href="https://wa.me/917676337153" target="_blank" rel="noopener">
+      <a data-label="Contact: WhatsApp Button" data-category="Contact" class="btn btn-inv js-wa" href="https://wa.me/917676337153" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6z"/><path d="M9.2 8.6c.2-.5.6-.5.9-.5l.6.1 1 2.1-.6.9c.5 1 1.3 1.8 2.3 2.3l.9-.6 2.1 1-.1.6c-.1.6-.9 1.3-1.7 1.3-2.6 0-5.9-3.3-5.9-5.9 0-.5.2-1 .5-1.3z" stroke-width="1.3"/></svg>
         WhatsApp
       </a>
-      <a class="btn btn-ghost-inv" id="pdfBtn" href="og-ladka-media-kit.pdf" download="OG-Ladka-Media-Kit.pdf">
+      <a data-label="Download: Media Kit PDF" data-category="Download" class="btn btn-ghost-inv" id="pdfBtn" href="og-ladka-media-kit.pdf" download="OG-Ladka-Media-Kit.pdf">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19h14"/></svg>
         Download PDF
       </a>
     </div>
     <div class="links">
-      <a class="js-wa" href="https://wa.me/917676337153" target="_blank" rel="noopener">
+      <a data-label="Contact: WhatsApp Number" data-category="Contact" class="js-wa" href="https://wa.me/917676337153" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6z"/><path d="M9.2 8.6c.2-.5.6-.5.9-.5l.6.1 1 2.1-.6.9c.5 1 1.3 1.8 2.3 2.3l.9-.6 2.1 1-.1.6c-.1.6-.9 1.3-1.7 1.3-2.6 0-5.9-3.3-5.9-5.9 0-.5.2-1 .5-1.3z" stroke-width="1.3"/></svg>
         +91 76763 37153
       </a>
-      <a href="mailto:onehemansu@gmail.com">
+      <a data-label="Contact: Email" data-category="Contact" href="mailto:onehemansu@gmail.com">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3.5" y="5.5" width="17" height="13" rx="2.5"/><path d="M4 7l8 6 8-6"/></svg>
         onehemansu@gmail.com
       </a>
-      <a href="https://instagram.com/ogladkaa" target="_blank" rel="noopener">
+      <a data-label="Social: Instagram" data-category="Social" href="https://instagram.com/ogladkaa" target="_blank" rel="noopener">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/></svg>
         @ogladkaa
       </a>

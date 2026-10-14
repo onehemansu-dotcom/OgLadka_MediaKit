@@ -1,3 +1,38 @@
+// ---------- Analytics (GA4 + Clarity load in index.html) ----------
+// Same events as the link-in-bio site, so both show up the same way in GA4:
+//   link_click   fires for every element with data-label (+ data-category)
+//   section_view fires once per section (data-section) the visitor scrolls to
+(function () {
+  function track(label, url, category, eventName) {
+    if (typeof gtag === 'function') {
+      gtag('event', eventName || 'link_click', {
+        click_label: label || 'unknown',
+        link_url: url || '',
+        click_category: category || 'General'
+      });
+    }
+  }
+  window.ogTrack = track;
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-label]');
+    if (!a) return;
+    track(a.getAttribute('data-label'), a.getAttribute('href') || '', a.getAttribute('data-category') || 'General');
+  });
+
+  var sections = document.querySelectorAll('[data-section]');
+  if (!sections.length || !('IntersectionObserver' in window)) return;
+  var io = new IntersectionObserver(function (entries) {
+    entries.forEach(function (en) {
+      if (!en.isIntersecting) return;
+      var name = en.target.getAttribute('data-section');
+      if (typeof gtag === 'function') gtag('event', 'section_view', { section_name: name });
+      io.unobserve(en.target);
+    });
+  }, { rootMargin: '0px 0px -40% 0px', threshold: 0 });
+  sections.forEach(function (s) { io.observe(s); });
+})();
+
 // Motion: sections ease in as you scroll, numbers count up once.
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
