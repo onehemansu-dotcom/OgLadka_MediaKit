@@ -33,6 +33,35 @@
   sections.forEach(function (s) { io.observe(s); });
 })();
 
+// Starting rate follows the numbers: median views x a fixed rate per view,
+// kept within 5% of the last published price and rounded to the nearest 500 minus 1.
+// Runs before the count-up animation so it reads the final figures.
+(function () {
+  var priceEl = document.getElementById('reelPrice');
+  var medEl = document.getElementById('medianViews');
+  var engEl = document.getElementById('engRate');
+  var mathEl = document.getElementById('rateMath');
+  if (!priceEl || !medEl || !engEl) return;
+  function num(text) {
+    var m = text.trim().match(/^([\d.]+)\s*([KM%]?)$/i);
+    if (!m) return NaN;
+    var n = parseFloat(m[1]), s = m[2].toUpperCase();
+    return s === 'K' ? n * 1e3 : s === 'M' ? n * 1e6 : s === '%' ? n / 100 : n;
+  }
+  var median = num(medEl.textContent), eng = num(engEl.textContent);
+  var cpv = parseFloat(priceEl.getAttribute('data-cpv'));
+  var prev = parseFloat(priceEl.getAttribute('data-prev'));
+  if (!(median > 0) || !(eng > 0) || !(cpv > 0)) return;
+  var raw = median * cpv;
+  if (prev > 0) raw = Math.max(prev * 0.95, Math.min(prev * 1.05, raw));
+  var price = Math.round(raw / 500) * 500 - 1;
+  priceEl.textContent = 'from \u20B9' + price.toLocaleString('en-IN');
+  if (mathEl) {
+    mathEl.textContent = 'Based on ' + medEl.textContent.trim() + ' median views across my last 10 Reels. Works out to \u20B9' +
+      (price / median).toFixed(2) + ' per view and \u20B9' + (price / (median * eng)).toFixed(2) + ' per engagement.';
+  }
+})();
+
 // Motion: sections ease in as you scroll, numbers count up once.
 (function () {
   var reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
