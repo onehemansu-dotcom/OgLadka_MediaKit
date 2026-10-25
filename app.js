@@ -33,6 +33,79 @@
   sections.forEach(function (s) { io.observe(s); });
 })();
 
+// ---------- Brand open tracking ----------
+// A link like ...?b=acko tells me that brand opened the kit, for how long,
+// which sections they reached and what they tapped. Saved to my Google Sheet.
+// Opening the kit once with ?owner=1 marks that device as mine so my own visits don't count.
+(function () {
+  var ENDPOINT = 'https://script.google.com/macros/s/AKfycbx9f7u2SH-1THYGTdrqR1QUgxoNfD6T_UKiLgssP8Zp3-HpH8KDJcEgOy8mATVKxyPc/exec';
+  if (ENDPOINT.indexOf('https://') !== 0) return;
+  var q = new URLSearchParams(location.search);
+  function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  if (q.get('owner') === '1') set('og_owner', '1');
+  if (get('og_owner') === '1') return;
+  var brand = (q.get('b') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40);
+  if (!brand) return;
+
+  function rid() { return Math.random().toString(36).slice(2, 10) + Date.now().toString(36).slice(-4); }
+  var vid = get('og_vid');
+  if (!vid) { vid = rid(); set('og_vid', vid); }
+  var visit = rid();
+
+  var ua = navigator.userAgent;
+  var device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' : /Macintosh/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
+  var app = /Instagram/.test(ua) ? 'Instagram' : /FBAN|FBAV/.test(ua) ? 'Facebook' : /LinkedInApp/.test(ua) ? 'LinkedIn' : 'Browser';
+
+  var activeMs = 0, since = document.hidden ? 0 : Date.now();
+  var seen = [], clicks = [];
+  function secs() { return Math.round((activeMs + (since ? Date.now() - since : 0)) / 1000); }
+
+  function send() {
+    var body = JSON.stringify({
+      brand: brand, visit: visit, vid: vid, device: device, app: app,
+      secs: secs(), sections: seen.join(', '), clicks: clicks.join(', ')
+    });
+    try { if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return; } catch (e) {}
+    try { fetch(ENDPOINT, { method: 'POST', body: body, mode: 'no-cors', keepalive: true }); } catch (e) {}
+  }
+
+  send();
+
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { if (since) { activeMs += Date.now() - since; since = 0; } send(); }
+    else { since = Date.now(); }
+  });
+  window.addEventListener('pagehide', send);
+
+  // Keeps the time accurate even if the browser closes without warning.
+  var beats = 0, beat = setInterval(function () {
+    if (document.hidden) return;
+    if (++beats > 20) { clearInterval(beat); return; }
+    send();
+  }, 30000);
+
+  document.querySelectorAll('[data-section]').forEach(function (s) {
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (en) {
+      if (!en[0].isIntersecting) return;
+      var name = s.getAttribute('data-section');
+      if (seen.indexOf(name) === -1) seen.push(name);
+      io.disconnect();
+    }, { rootMargin: '0px 0px -40% 0px' });
+    io.observe(s);
+  });
+
+  document.addEventListener('click', function (e) {
+    var a = e.target.closest('[data-label]');
+    if (!a) return;
+    var label = a.getAttribute('data-label');
+    if (/^Nav:/.test(label)) return;
+    if (clicks.indexOf(label) === -1) clicks.push(label);
+    send();
+  });
+})();
+
 // Starting rate follows the numbers: median views x a fixed rate per view,
 // kept within 5% of the last published price and rounded to the nearest 500 minus 1.
 // Runs before the count-up animation so it reads the final figures.
