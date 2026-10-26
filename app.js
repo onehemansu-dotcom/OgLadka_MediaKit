@@ -106,8 +106,8 @@
   });
 })();
 
-// Starting rate follows the numbers: median views x a fixed rate per view,
-// kept within 5% of the last published price and rounded to the nearest 500 minus 1.
+// Starting rate: Hemansu sets it himself (data-price on #reelPrice); nothing here changes it.
+// The line under it works out what that rate means per view and per engagement.
 // Runs before the count-up animation so it reads the final figures.
 (function () {
   var priceEl = document.getElementById('reelPrice');
@@ -122,12 +122,8 @@
     return s === 'K' ? n * 1e3 : s === 'M' ? n * 1e6 : s === '%' ? n / 100 : n;
   }
   var median = num(medEl.textContent), eng = num(engEl.textContent);
-  var cpv = parseFloat(priceEl.getAttribute('data-cpv'));
-  var prev = parseFloat(priceEl.getAttribute('data-prev'));
-  if (!(median > 0) || !(eng > 0) || !(cpv > 0)) return;
-  var raw = median * cpv;
-  if (prev > 0) raw = Math.max(prev * 0.95, Math.min(prev * 1.05, raw));
-  var price = Math.round(raw / 500) * 500 - 1;
+  var price = parseFloat(priceEl.getAttribute('data-price'));
+  if (!(median > 0) || !(eng > 0) || !(price > 0)) return;
   priceEl.textContent = 'from \u20B9' + price.toLocaleString('en-IN');
   if (mathEl) {
     mathEl.textContent = 'Based on ' + medEl.textContent.trim() + ' median views across my last 10 Reels. Works out to \u20B9' +

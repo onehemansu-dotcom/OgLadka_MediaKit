@@ -1,0 +1,25 @@
+[
+  {
+    "date": "2026-10-22",
+    "followers": 71300,
+    "views30": 1500000,
+    "reached30": 1010000,
+    "nonFollowerPct": 94.3,
+    "median": 76000,
+    "engagement": 5.0,
+    "rate": 31499,
+    "note": "From the kit as published on Oct 22 (rounded figures)"
+  },
+  {
+    "date": "2026-10-26",
+    "followers": 71317,
+    "views30": 1716567,
+    "reached30": 1077201,
+    "nonFollowerPct": 93.2,
+    "median": 117000,
+    "engagement": 4.9,
+    "rate": 29999,
+    "verdict": "Great",
+    "note": "First automatic refresh; median and engagement as shown on the kit. Rate set back to 29,999 by Hemansu"
+  }
+]

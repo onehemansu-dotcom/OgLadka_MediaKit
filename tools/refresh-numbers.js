@@ -1,4 +1,6 @@
-// Writes fresh Instagram numbers into index.html, formatted exactly like the kit, and moves the rate.
+// Writes fresh Instagram numbers into index.html, formatted exactly like the kit, and compares
+// them with the last refresh. It never changes the starting rate: Hemansu decides that
+// (tools/set-rate.js). It only updates the "works out to" line under the rate.
 // Usage (from the repo root): node tools/refresh-numbers.js numbers.json [--dry]
 // numbers.json:
 // {
@@ -10,12 +12,13 @@
 //   "last10": [{"views": 258000, "interactions": 12000}, ...],   // 10 most recent non-pinned Reels
 //   "mostLoved": {"Video: Matte Paint Care": 2750000, ...}        // optional, keyed by data-label
 // }
-// Rate rule (same as app.js): median views x data-cpv, kept within 5% of the last published price,
-// rounded to the nearest 500 minus 1. data-prev becomes the price that was live before this refresh.
+// Every run is saved to tools/history.json so the next refresh can compare against it.
 const fs = require('fs');
 const path = require('path');
+const { num, readPrice, writePrice } = require('./kit-rate');
 
 const file = path.resolve(__dirname, '..', 'index.html');
+const historyFile = path.resolve(__dirname, 'history.json');
 const input = JSON.parse(fs.readFileSync(process.argv[2], 'utf8'));
 const dry = process.argv.includes('--dry');
 let html = fs.readFileSync(file, 'utf8');
@@ -24,17 +27,6 @@ const changes = [];
 function need(cond, msg) { if (!cond) { console.error('STOP: ' + msg); process.exit(2); } }
 const trim1 = (n) => n.toFixed(1).replace(/\.0$/, '');
 function shortK(n) { return n >= 1e6 ? trim1(n / 1e6) + 'M' : Math.round(n / 1e3) + 'K'; }
-function num(text) {
-  const m = String(text).trim().match(/^([\d.]+)\s*([KM%]?)$/i);
-  if (!m) return NaN;
-  const n = parseFloat(m[1]), s = m[2].toUpperCase();
-  return s === 'K' ? n * 1e3 : s === 'M' ? n * 1e6 : s === '%' ? n / 100 : n;
-}
-function priceFor(median, cpv, prev) {
-  let raw = median * cpv;
-  if (prev > 0) raw = Math.max(prev * 0.95, Math.min(prev * 1.05, raw));
-  return Math.round(raw / 500) * 500 - 1;
-}
 function setRow(label, value) {
   const re = new RegExp('(<span>' + label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '</span><span class="v"[^>]*>)([^<]*)(</span>)');
   const m = html.match(re);
@@ -58,15 +50,13 @@ need(Math.abs(input.followers - oldFollowers) / oldFollowers < 0.2, 'followers m
 const views = input.last10.map((r) => r.views).sort((a, b) => a - b);
 const median = (views[4] + views[5]) / 2;
 const eng = input.last10.reduce((s, r) => s + r.interactions, 0) / input.last10.reduce((s, r) => s + r.views, 0);
-const medianText = shortK(median);
-const engText = (eng * 100).toFixed(1) + '%';
 
 setRow('Followers', trim1(input.followers / 1e3) + 'K');
 setRow('Views, last 30 days', input.views30 >= 1e6 ? trim1(input.views30 / 1e6) + 'M' : Math.round(input.views30 / 1e3) + 'K');
 setRow('Accounts reached, last 30 days', input.reached30 >= 1e6 ? (input.reached30 / 1e6).toFixed(2) + 'M' : Math.round(input.reached30 / 1e3) + 'K');
 setRow('Views from non-followers', input.nonFollowerPct.toFixed(1) + '%');
-setRow('Median views, last 10 Reels', medianText);
-setRow('Engagement, last 10 Reels', engText);
+setRow('Median views, last 10 Reels', shortK(median));
+setRow('Engagement, last 10 Reels', (eng * 100).toFixed(1) + '%');
 
 // Dates
 const d = new Date(input.date + 'T12:00:00+05:30');
@@ -76,19 +66,9 @@ html = html.replace(/Last refresh [A-Z][a-z]{2} \d{1,2}, \d{4}\./, 'Last refresh
 html = html.replace(/Updated [A-Z][a-z]{2} \d{1,2}, \d{4}\. Refreshed every 10 days\./, 'Updated ' + dateText + '. Refreshed every 10 days.');
 changes.push('Refresh date: ' + dateText);
 
-// Rate
-const pm = html.match(/<span class="price" id="reelPrice" data-cpv="([\d.]+)" data-prev="(\d+)">from ₹([\d,]+)<\/span>/);
-need(pm, 'price element not found');
-const cpv = parseFloat(pm[1]);
-const oldMedian = num(html.match(/id="medianViews">([^<]*)</)[1]);
-const livePrice = parseInt(pm[3].replace(/,/g, ''), 10);
-const newPrice = priceFor(num(medianText), cpv, livePrice);
-html = html.replace(pm[0], '<span class="price" id="reelPrice" data-cpv="' + pm[1] + '" data-prev="' + livePrice + '">from ₹' + newPrice.toLocaleString('en-IN') + '</span>');
-const medianN = num(medianText), engN = num(engText);
-const mathText = 'Based on ' + medianText + ' median views across my last 10 Reels. Works out to ₹' + (newPrice / medianN).toFixed(2) + ' per view and ₹' + (newPrice / (medianN * engN)).toFixed(2) + ' per engagement.';
-html = html.replace(/(<p class="honest" id="rateMath">)[^<]*(<\/p>)/, '$1' + mathText + '$2');
-if (newPrice !== livePrice) changes.push('Starting rate: ₹' + livePrice.toLocaleString('en-IN') + ' -> ₹' + newPrice.toLocaleString('en-IN'));
-void oldMedian;
+// The rate stays exactly as Hemansu set it; only the line under it is recomputed.
+const price = readPrice(html);
+html = writePrice(html, price);
 
 // Most loved videos
 Object.entries(input.mostLoved || {}).forEach(([label, v]) => {
@@ -100,5 +80,32 @@ Object.entries(input.mostLoved || {}).forEach(([label, v]) => {
   html = html.replace(re, '$1' + text + '$3');
 });
 
-if (!dry) fs.writeFileSync(file, html);
-console.log((dry ? 'DRY RUN, nothing written\n' : '') + changes.join('\n'));
+// Compare with the last refresh
+const history = fs.existsSync(historyFile) ? JSON.parse(fs.readFileSync(historyFile, 'utf8')) : [];
+const prev = history.filter((h) => h.date < input.date).slice(-1)[0];
+const entry = { date: input.date, followers: input.followers, views30: input.views30, reached30: input.reached30, nonFollowerPct: input.nonFollowerPct, median: median, engagement: +(eng * 100).toFixed(2), rate: price };
+const report = [];
+if (prev) {
+  const pct = (a, b) => (b > 0 ? ((a - b) / b) * 100 : 0);
+  const sign = (x, unit) => {
+    const r = unit === 'pts' ? Math.round(x * 10) / 10 : Math.round(x);
+    return (r > 0 ? '+' : '') + (r === 0 ? '0' : r.toFixed(unit === 'pts' ? 1 : 0)) + (unit === 'pts' ? ' pts' : '%');
+  };
+  const pv = pct(input.views30, prev.views30), pm = pct(median, prev.median);
+  report.push('Compared with ' + prev.date + ':');
+  report.push('Views, 30 days ' + sign(pv) + ', reach ' + sign(pct(input.reached30, prev.reached30)) + ', median views ' + sign(pm) +
+    ', engagement ' + sign(eng * 100 - prev.engagement, 'pts') + ', followers ' + sign(pct(input.followers, prev.followers)));
+  const score = (pv + pm) / 2;
+  const verdict = score >= 15 ? 'Great' : score >= -5 ? 'Good' : 'Bad';
+  report.push('Verdict: ' + verdict + ' (views and median views together ' + sign(score) + ')');
+  entry.verdict = verdict;
+} else {
+  report.push('No earlier refresh saved yet, so nothing to compare.');
+}
+report.push('Rate unchanged at ₹' + price.toLocaleString('en-IN') + ', which now works out to ₹' + (price / num(shortK(median))).toFixed(2) + ' per view.');
+
+if (!dry) {
+  fs.writeFileSync(file, html);
+  fs.writeFileSync(historyFile, JSON.stringify(history.filter((h) => h.date !== input.date).concat([entry]), null, 2) + '\n');
+}
+console.log((dry ? 'DRY RUN, nothing written\n' : '') + changes.join('\n') + '\n' + report.join('\n'));
