@@ -56,6 +56,9 @@
   var visit = rid();
   tag('brand', brand);
   tag('visit', visit);
+  // Clarity's ids for this visit, so the tracker email can link straight to its replay.
+  var cu = '', cs = '';
+  try { if (typeof clarity === 'function') clarity('metadata', function (m) { if (m) { cu = m.userId || ''; cs = m.sessionId || ''; } }, false, true); } catch (e) {}
   try { if (typeof clarity === 'function') clarity('upgrade', 'brand link'); } catch (e) {}
 
   var ua = navigator.userAgent;
@@ -99,7 +102,7 @@
   function send(end) {
     var body = JSON.stringify({
       brand: brand, visit: visit, vid: vid, device: device, app: app,
-      secs: secs(), sections: journey(), clicks: clicks.join(', '), end: end === true ? 1 : 0
+      secs: secs(), sections: journey(), clicks: clicks.join(', '), end: end === true ? 1 : 0, cu: cu, cs: cs
     });
     try { if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return; } catch (e) {}
     try { fetch(ENDPOINT, { method: 'POST', body: body, mode: 'no-cors', keepalive: true }); } catch (e) {}
