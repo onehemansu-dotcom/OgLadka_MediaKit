@@ -43,8 +43,10 @@
   var q = new URLSearchParams(location.search);
   function get(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function set(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  // Clarity recordings: tag each visit so they can be filtered by brand (Filters > Custom tags > brand).
+  function tag(k, v) { try { if (typeof clarity === 'function') clarity('set', k, v); } catch (e) {} }
   if (q.get('owner') === '1') set('og_owner', '1');
-  if (get('og_owner') === '1') return;
+  if (get('og_owner') === '1') { tag('owner', 'yes'); return; }
   var brand = (q.get('b') || '').toLowerCase().replace(/[^a-z0-9]/g, '').slice(0, 40);
   if (!brand) return;
 
@@ -52,6 +54,9 @@
   var vid = get('og_vid');
   if (!vid) { vid = rid(); set('og_vid', vid); }
   var visit = rid();
+  tag('brand', brand);
+  tag('visit', visit);
+  try { if (typeof clarity === 'function') clarity('upgrade', 'brand link'); } catch (e) {}
 
   var ua = navigator.userAgent;
   var device = /iPhone|iPad|iPod/.test(ua) ? 'iPhone' : /Android/.test(ua) ? 'Android' : /Macintosh/.test(ua) ? 'Mac' : /Windows/.test(ua) ? 'Windows' : 'Other';
