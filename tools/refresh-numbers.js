@@ -63,7 +63,7 @@ const d = new Date(input.date + 'T12:00:00+05:30');
 const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const dateText = months[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
 html = html.replace(/Last refresh [A-Z][a-z]{2} \d{1,2}, \d{4}\./, 'Last refresh ' + dateText + '.');
-html = html.replace(/Updated [A-Z][a-z]{2} \d{1,2}, \d{4}\. Refreshed every 10 days\./, 'Updated ' + dateText + '. Refreshed every 10 days.');
+html = html.replace(/Numbers updated [A-Z][a-z]{2} \d{1,2}, \d{4}\./, 'Numbers updated ' + dateText + '.');
 changes.push('Refresh date: ' + dateText);
 
 // The rate stays exactly as Hemansu set it; only the line under it is recomputed.
