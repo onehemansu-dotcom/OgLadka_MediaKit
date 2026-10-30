@@ -82,7 +82,11 @@ Object.entries(input.mostLoved || {}).forEach(([label, v]) => {
 
 // Compare with the last refresh
 const history = fs.existsSync(historyFile) ? JSON.parse(fs.readFileSync(historyFile, 'utf8')) : [];
-const prev = history.filter((h) => h.date < input.date).slice(-1)[0];
+// Compare with the newest refresh that's at least 7 days older, so an extra on-demand refresh
+// doesn't turn the next scheduled comparison into a 1-day one. Falls back to the newest older refresh.
+const daysBack = (d) => (new Date(input.date) - new Date(d)) / 864e5;
+const older = history.filter((h) => h.date < input.date);
+const prev = older.filter((h) => daysBack(h.date) >= 7).slice(-1)[0] || older.slice(-1)[0];
 const entry = { date: input.date, followers: input.followers, views30: input.views30, reached30: input.reached30, nonFollowerPct: input.nonFollowerPct, median: median, engagement: +(eng * 100).toFixed(2), rate: price };
 const report = [];
 if (prev) {
