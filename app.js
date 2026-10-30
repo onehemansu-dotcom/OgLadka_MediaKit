@@ -66,10 +66,39 @@
   var seen = [], clicks = [];
   function secs() { return Math.round((activeMs + (since ? Date.now() - since : 0)) / 1000); }
 
+  // Where they spend their time: every second the page is on screen counts towards the section
+  // under the reading line (40% down the screen). "left at" is the section they were on last.
+  var secEls = Array.prototype.slice.call(document.querySelectorAll('[data-section]'));
+  var dwell = {}, current = '';
+  function sectionNow() {
+    var line = window.innerHeight * 0.4, name = '';
+    secEls.forEach(function (s) {
+      var r = s.getBoundingClientRect();
+      if (r.top <= line && r.bottom > line) name = s.getAttribute('data-section');
+    });
+    return name;
+  }
+  setInterval(function () {
+    if (document.hidden) return;
+    var name = sectionNow();
+    if (!name) return;
+    current = name;
+    dwell[name] = (dwell[name] || 0) + 1;
+    if (seen.indexOf(name) === -1) seen.push(name);
+  }, 1000);
+  // Sent in the Sections column, e.g. "About 2s, Numbers 6s, Rates 20s | left at Numbers"
+  function journey() {
+    var parts = seen.map(function (n) { return n + ' ' + (dwell[n] || 0) + 's'; });
+    var tail = current ? ' | left at ' + current : '';
+    var text = parts.join(', ') + tail;
+    if (text.length > 195) text = parts.filter(function (p) { return !/ 0s$/.test(p); }).join(', ') + tail;
+    return text.slice(0, 200);
+  }
+
   function send() {
     var body = JSON.stringify({
       brand: brand, visit: visit, vid: vid, device: device, app: app,
-      secs: secs(), sections: seen.join(', '), clicks: clicks.join(', ')
+      secs: secs(), sections: journey(), clicks: clicks.join(', ')
     });
     try { if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return; } catch (e) {}
     try { fetch(ENDPOINT, { method: 'POST', body: body, mode: 'no-cors', keepalive: true }); } catch (e) {}
