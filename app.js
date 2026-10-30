@@ -95,10 +95,11 @@
     return text.slice(0, 200);
   }
 
-  function send() {
+  // end = the visit is over for now (closed or switched away): the tracker emails Hemansu once per visit.
+  function send(end) {
     var body = JSON.stringify({
       brand: brand, visit: visit, vid: vid, device: device, app: app,
-      secs: secs(), sections: journey(), clicks: clicks.join(', ')
+      secs: secs(), sections: journey(), clicks: clicks.join(', '), end: end === true ? 1 : 0
     });
     try { if (navigator.sendBeacon && navigator.sendBeacon(ENDPOINT, body)) return; } catch (e) {}
     try { fetch(ENDPOINT, { method: 'POST', body: body, mode: 'no-cors', keepalive: true }); } catch (e) {}
@@ -107,16 +108,16 @@
   send();
 
   document.addEventListener('visibilitychange', function () {
-    if (document.hidden) { if (since) { activeMs += Date.now() - since; since = 0; } send(); }
+    if (document.hidden) { if (since) { activeMs += Date.now() - since; since = 0; } send(true); }
     else { since = Date.now(); }
   });
-  window.addEventListener('pagehide', send);
+  window.addEventListener('pagehide', function () { send(true); });
 
   // Keeps the time accurate even if the browser closes without warning.
   var beats = 0, beat = setInterval(function () {
     if (document.hidden) return;
     if (++beats > 20) { clearInterval(beat); return; }
-    send();
+    send(beats === 20);
   }, 30000);
 
   document.querySelectorAll('[data-section]').forEach(function (s) {
