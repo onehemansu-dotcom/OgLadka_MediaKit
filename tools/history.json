@@ -32,5 +32,16 @@
     "engagement": 4.95,
     "rate": 29999,
     "verdict": "Great"
+  },
+  {
+    "date": "2026-11-14",
+    "followers": 70766,
+    "views30": 1779165,
+    "reached30": 975079,
+    "nonFollowerPct": 92.4,
+    "median": 164232.5,
+    "engagement": 4.99,
+    "rate": 29999,
+    "verdict": "Good"
   }
 ]
