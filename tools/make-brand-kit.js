@@ -13,7 +13,7 @@
 //   "brand": "Acme Lubes",              board name in Brand Leads; the tracking slug comes from it
 //   "category": "care",                 care | insurance | auto (picks default videos and benchmarks)
 //   "date": "2026-11-16",
-//   "pitch": "Two lines on how this helps them, in OG Ladka's voice. Never echo their own words.",
+//   "pitch": "Two lines, only about what they gain, fitted to their message. Never echo their own words.",
 //   "partnerships": ["car101"],         optional, branded work that fits them ([] for none)
 //   "originals": ["matte", "iridium", "wrap"],   optional, exactly 3
 //   "reel": 24999,                      reel price from the rate card
@@ -130,6 +130,7 @@ const payload = {
   items: items,
   notOffered: spec.notOffered || [],
   bench: BENCH[spec.category],
+  contact: JSON.parse(fs.readFileSync(path.join(__dirname, 'contact.json'), 'utf8')),
   numbers: numbers
 };
 

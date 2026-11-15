@@ -52,16 +52,12 @@
   }
 
   function videos(list, n, group) {
-    var cls = 'vids vids-' + Math.min(list.length, 3);
-    return '<div class="' + cls + '">' + list.map(function (w) {
+    return '<div class="vids">' + list.map(function (w) {
       var views = w.views > 0 ? w.views : (w.label && n.mostLoved && n.mostLoved[w.label] > 0 ? n.mostLoved[w.label] : 0);
-      var meta = views ? shortK(views) + ' views' : (w.meta || '');
       return '<a data-label="' + group + ': ' + esc(w.title) + '" data-category="' + group + '" class="vid" href="' + esc(w.href) + '" target="_blank" rel="noopener">' +
         '<div class="thumb"><img src="' + IMG + esc(w.img) + '" alt="' + esc(w.title) + '" />' +
         (w.badge ? '<img class="badge" src="' + IMG + esc(w.badge) + '" alt="" />' : '') + '</div>' +
-        '<div class="vid-text"><div class="vid-title">' + esc(w.title) + '</div>' +
-        (w.sub ? '<div class="vid-sub">' + esc(w.sub) + '</div>' : '') +
-        '<div class="vid-meta">' + esc(meta) + '</div></div></a>';
+        '<div class="vid-meta">' + (views ? shortK(views) + ' views' : '&nbsp;') + '</div></a>';
     }).join('') + '</div>';
   }
 
@@ -70,19 +66,8 @@
     var median = fromShort(medianText);
     var eng = Math.round(n.engagement * 10) / 1000;
     var price = k.reel.price;
-
-    // What a brand would otherwise pay for the same reach (sources in tools/make-brand-kit.js).
     var b = k.bench;
-    var market = Math.round(median * b.creatorPer1k / 1000 / 100) * 100;
-    var diy = Math.floor((b.productionFrom + median * b.adPer1k / 1000) / 1000) * 1000;
-    var bars = [{ label: 'Making it yourself and running ads', amt: diy, from: true, cls: 'bar-them' }];
-    if (price < market) bars.push({ label: 'Typical creator rate for this reach', amt: market, cls: 'bar-them' });
-    bars.push({ label: 'OG Ladka', amt: price, cls: 'bar-us' });
-    var max = Math.max.apply(null, bars.map(function (x) { return x.amt; }));
-    var barHtml = bars.map(function (x) {
-      return '<div class="bar-row ' + x.cls + '"><div class="bar-top"><span>' + esc(x.label) + '</span><b>' + (x.from ? 'from ' : '') + inr(x.amt) + '</b></div>' +
-        '<div class="bar-track"><i style="width:' + Math.max(6, Math.round(x.amt / max * 100)) + '%"></i></div></div>';
-    }).join('');
+    var diy = b.productionFrom + median * b.adPer1k / 1000;
     var saving = Math.round((1 - price / diy) * 100);
 
     var total = price, priced = false;
@@ -92,9 +77,16 @@
         (it.desc ? '<div class="row-desc">' + esc(it.desc) + '</div>' : '') + '</div>' +
         (it.price > 0 ? '<span class="q-amt">' + inr(it.price) + '</span>' : '<span class="q-amt muted">' + esc(it.note || 'Included') + '</span>') + '</div>';
     }).join('') + (k.notOffered || []).map(function (it) {
-      return '<div class="q-row" data-label="Collab: ' + esc(it.title) + '" data-category="Collab"><div><div class="row-title">' + esc(it.title) + '</div>' +
-        (it.desc ? '<div class="row-desc">' + esc(it.desc) + '</div>' : '') + '</div><span class="q-amt muted">Not offered</span></div>';
+      return '<div class="q-row" data-label="Collab: ' + esc(it.title) + '" data-category="Collab"><div class="row-title">' + esc(it.title) + '</div><span class="q-amt muted">Not offered</span></div>';
     }).join('');
+
+    var contact = [
+      ['Name', esc(k.contact.name)],
+      ['Phone', '<a data-label="Contact: Call" data-category="Contact" href="tel:' + k.contact.phone.replace(/\s/g, '') + '">' + esc(k.contact.phone) + '</a>'],
+      k.contact.email ? ['Email', '<span class="sel" data-label="Contact: Email" data-category="Contact">' + esc(k.contact.email) + '</span>'] : null,
+      ['Instagram', '<a data-label="Social: Instagram" data-category="Social" href="https://instagram.com/' + esc(k.contact.instagram) + '" target="_blank" rel="noopener">@' + esc(k.contact.instagram) + '</a>'],
+      ['Based in', esc(k.contact.city)]
+    ].filter(Boolean).map(function (r) { return '<div class="c-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('');
 
     root.innerHTML =
       '<section data-section="Intro" class="kit-hero">' +
@@ -113,24 +105,21 @@
         '<p class="foot">Based on recent numbers, ' + esc(niceDate(n.date)) + '.</p>' +
       '</section>' +
       (k.partnerships && k.partnerships.length ?
-        '<section data-section="Brand Partnerships"><h2 class="h2-sm">Brand partnerships</h2>' + videos(k.partnerships, n, 'Partnership') + '</section>' : '') +
-      '<section data-section="Originals"><h2 class="h2-sm">Originals</h2>' + videos(k.originals, n, 'Original') + '</section>' +
-      '<section data-section="Value" class="value">' +
+        '<section data-section="Made For Brands"><h2 class="h2-sm">Made for brands recently</h2>' + videos(k.partnerships, n, 'Brand video') + '</section>' : '') +
+      '<section data-section="Audience Favourites"><h2 class="h2-sm">Audience favourites</h2>' + videos(k.originals, n, 'Original') + '</section>' +
+      '<section data-section="Value">' +
         '<h2 class="h2-sm">What it works out to</h2>' +
         '<div class="v-card">' +
-          '<div class="v-head"><div class="v-big">₹' + (price / median).toFixed(2) + '</div><div class="v-unit">per view on a Reel</div></div>' +
-          '<div class="v-grid">' +
-            '<div><b>' + medianText + '</b><span>median views</span></div>' +
+          '<div class="v-three">' +
+            '<div><b>₹' + (price / median).toFixed(2) + '</b><span>per view</span></div>' +
             '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
             '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
           '</div>' +
-          '<div class="bars">' + barHtml + '</div>' +
-          (saving > 0 ? '<p class="v-save">About ' + saving + '% less than making and promoting a Reel like this on your own.</p>' : '') +
+          (saving > 0 ? '<p class="v-save">' + saving + '% less than making it and running ads yourself.</p>' : '') +
         '</div>' +
-        '<p class="v-note">' + esc(b.note) + '</p>' +
       '</section>' +
-      '<section data-section="Collaboration" class="collab-sec">' +
-        '<h2 class="h2-sm">The collaboration</h2>' +
+      '<section data-section="Collaboration">' +
+        '<h2 class="h2-sm">This collaboration</h2>' +
         '<div class="deal">' +
           '<div class="deal-main" data-label="Collab: Reel" data-category="Collab"><div class="deal-label">' + esc(k.reel.title) + '</div>' +
             '<div class="deal-price">' + inr(price) + '</div><div class="deal-desc">' + esc(k.reel.desc) + '</div></div>' +
@@ -138,14 +127,11 @@
           (priced ? '<div class="q-row q-total"><div class="row-title">Total</div><span class="q-amt">' + inr(total) + '</span></div>' : '') +
         '</div>' +
       '</section>' +
-      '<section data-section="Contact" class="card-contact">' +
-        '<h2 class="h2-sm">Let’s talk</h2>' +
-        '<div class="c-rows">' +
-          '<a class="c-row" data-label="Contact: Call" data-category="Contact" href="tel:' + PHONE + '"><span>Call</span><b>' + PHONE_TEXT + '</b></a>' +
-          (k.email ? '<div class="c-row" data-label="Contact: Email" data-category="Contact"><span>Email</span><b class="sel">' + esc(k.email) + '</b></div>' : '') +
-        '</div>' +
+      '<section data-section="Contact">' +
+        '<h2 class="h2-sm">Contact details</h2>' +
+        '<div class="c-rows">' + contact + '</div>' +
       '</section>' +
-      '<footer>OG Ladka, Bangalore. Prices in INR.</footer>';
+      '<footer>Prices in INR.</footer>';
     root.classList.add('kit-in');
     document.title = 'OG Ladka media kit';
   }
