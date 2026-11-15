@@ -9,13 +9,13 @@ main.kit{max-width:560px;gap:56px;padding-top:max(10px,env(safe-area-inset-top,0
 .ig-icons{display:flex;gap:10px}
 .ig-icons a{display:grid;place-items:center;width:40px;height:40px;color:var(--ink)}
 .ig-icons svg{width:26px;height:26px}
-.ig-top{display:flex;align-items:center;gap:22px}
-.ig-avatar{width:88px;height:88px;border-radius:50%;object-fit:cover;flex:none;background:var(--fill)}
+.ig-top{display:flex;align-items:center;gap:16px}
+.ig-avatar{width:80px;height:80px;border-radius:50%;object-fit:cover;flex:none;background:var(--fill)}
 .ig-right{flex:1;min-width:0}
 .ig-name{font-size:15px;font-weight:600;margin-bottom:8px}
-.ig-stats{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px 12px}
+.ig-stats{display:grid;grid-template-columns:repeat(3,max-content);justify-content:space-between;gap:8px}
 .ig-stats b{display:block;font-size:18px;font-weight:600;line-height:1.2;font-variant-numeric:tabular-nums}
-.ig-stats span{display:block;font-size:13px;line-height:1.3;color:var(--sub)}
+.ig-stats span{display:block;font-size:12.5px;line-height:1.3;color:var(--sub)}
 :root{--good:#15803D}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--good:#3DDC84}}
 :root[data-theme="dark"]{--good:#3DDC84}
@@ -54,11 +54,12 @@ main.kit{max-width:560px;gap:56px;padding-top:max(10px,env(safe-area-inset-top,0
 
 /* What it works out to: numbers to scan, one line */
 .v-card{margin-top:16px;background:var(--surface);border-radius:24px;padding:24px 20px}
-.v-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
-.v-three div{min-width:0}
-.v-three div + div{padding-left:14px;border-left:1px solid var(--line)}
-.v-three b{display:block;font-size:26px;line-height:1.05;font-weight:400;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
-.v-three span{display:block;margin-top:8px;font-size:13px;color:var(--sub)}
+.v-four{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+.v-four div{min-width:0;padding:4px 0 18px}
+.v-four div:nth-child(even){padding-left:18px;border-left:1px solid var(--line)}
+.v-four div:nth-child(n+3){padding-top:18px;padding-bottom:4px;border-top:1px solid var(--line)}
+.v-four b{display:block;font-size:28px;line-height:1.05;font-weight:400;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+.v-four span{display:block;margin-top:8px;font-size:13px;color:var(--sub)}
 .v-save{padding-top:18px;border-top:1px solid var(--line);font-size:15px;line-height:1.45}
 
 /* This collaboration */
@@ -106,6 +107,6 @@ main.kit footer.kit-foot{margin-top:-16px;display:flex;flex-direction:column;ali
 }
 @media (max-width:360px){
   .band-num{font-size:32px}
-  .v-three b{font-size:22px}
+  .v-four b{font-size:24px}
   .deal-price{font-size:40px}
 }

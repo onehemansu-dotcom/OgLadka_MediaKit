@@ -165,7 +165,7 @@ function textCopy(p) {
   const priced = p.items.filter((it) => it.price > 0);
   const total = p.reel.price + priced.reduce((s, it) => s + it.price, 0);
   const out = [
-    'Profile header: ogladkaa (verified), ' + p.contact.name + '. ' + medianText + ' median views, ' + sk(n.views30) + ' views in 30 days, ' + n.nonFollowerPct.toFixed(1) + '% non-follower views, ' + (eng * 100).toFixed(1) + '% engagement (numbers as of ' + n.date + ').',
+    'Profile header: ogladkaa (verified), ' + p.contact.name + '. ' + sk(n.views30) + ' views in 30 days, ' + n.nonFollowerPct.toFixed(1) + '% non-follower views, ' + (eng * 100).toFixed(1) + '% engagement (numbers as of ' + n.date + ').',
     'Bio: The person behind OG Ladka, Bengaluru. ' + p.pitch,
     p.partnerships.length ? 'Made for brands recently: ' + p.partnerships.map(vid).join('; ') + '.' : '',
     'Audience favourites: ' + p.originals.map(vid).join('; ') + '.',
@@ -174,7 +174,7 @@ function textCopy(p) {
       (p.notOffered.length ? ' Not offered: ' + p.notOffered.map((it) => it.title).join('; ') + '.' : '') +
       (priced.length ? ' Total ' + inr(total) + '.' : ''),
     'Prices cover only what was asked for in your message or email. Anything added later is quoted separately.',
-    'What it works out to: ₹' + (p.reel.price / median).toFixed(2) + ' per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' per engagement, ₹' + Math.round(p.reel.price / median * 1000) + ' per 1,000 views.',
+    'What it works out to: ' + medianText + ' views on a typical Reel, ₹' + (p.reel.price / median).toFixed(2) + ' per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' per engagement, ₹' + Math.round(p.reel.price / median * 1000) + ' per 1,000 views.',
     'Contact details: phone and email.',
     'Footer: This custom media kit was made for ' + p.forName + '. Prices and numbers can change for other brands, depending on the latest performance and the deliverables. Instagram and YouTube links.',
     'Open until ' + p.expires + '.'
