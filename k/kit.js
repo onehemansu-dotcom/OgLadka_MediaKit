@@ -93,17 +93,7 @@
             '<div><b>' + shortK(n.views30) + '</b><span>in 30 days</span></div>' +
             '<div><b>' + (eng * 100).toFixed(1) + '%</b><span>engagement</span></div>' +
           '</div></div></div>' +
-        '<div class="ig-bio"><div class="ig-cat">The person behind OG Ladka, Bengaluru</div><p>' + esc(k.pitch) + '</p></div>' +
-      '</section>' +
-      '<section data-section="Numbers">' +
-        '<h2 class="h2-sm">Recent performance</h2>' +
-        '<div class="band">' +
-          '<div class="band-cell"><div class="band-num">' + medianText + '</div><div class="band-label">Median views per Reel</div></div>' +
-          '<div class="band-cell"><div class="band-num">' + shortK(n.views30) + '</div><div class="band-label">Views in the last 30 days</div></div>' +
-          '<div class="band-cell"><div class="band-num good">' + n.nonFollowerPct.toFixed(1) + '%</div><div class="band-label">Of views from new people</div></div>' +
-          '<div class="band-cell"><div class="band-num good">' + (eng * 100).toFixed(1) + '%</div><div class="band-label">Engagement rate</div></div>' +
-        '</div>' +
-        '<p class="foot">Based on recent numbers, ' + esc(niceDate(n.date)) + '.</p>' +
+        '<div class="ig-bio"><div class="ig-cat">The person behind OG Ladka, Bengaluru</div><p>' + esc(k.pitch) + '</p><div class="ig-asof">Numbers as of ' + esc(niceDate(n.date)) + '</div></div>' +
       '</section>' +
       (k.partnerships && k.partnerships.length ?
         '<section data-section="Made For Brands"><h2 class="h2-sm">Made for brands recently</h2>' + videos(k.partnerships, n, 'Brand video') + '</section>' : '') +
