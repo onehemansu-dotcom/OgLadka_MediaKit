@@ -66,9 +66,6 @@
     var median = fromShort(medianText);
     var eng = Math.round(n.engagement * 10) / 1000;
     var price = k.reel.price;
-    var b = k.bench;
-    var diy = b.productionFrom + median * b.adPer1k / 1000;
-    var saving = Math.round((1 - price / diy) * 100);
 
     var total = price, priced = false;
     var rows = k.items.map(function (it) {
@@ -81,18 +78,14 @@
     }).join('');
 
     var contact = [
-      ['Name', esc(k.contact.name)],
       ['Phone', '<a data-label="Contact: Call" data-category="Contact" href="tel:' + k.contact.phone.replace(/\s/g, '') + '">' + esc(k.contact.phone) + '</a>'],
-      k.contact.email ? ['Email', '<span class="sel" data-label="Contact: Email" data-category="Contact">' + esc(k.contact.email) + '</span>'] : null,
-      ['Instagram', '<a data-label="Social: Instagram" data-category="Social" href="https://instagram.com/' + esc(k.contact.instagram) + '" target="_blank" rel="noopener">@' + esc(k.contact.instagram) + '</a>'],
-      ['Based in', esc(k.contact.city)]
-    ].filter(Boolean).map(function (r) { return '<div class="c-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('');
+      ['Email', '<span class="sel" data-label="Contact: Email" data-category="Contact">' + esc(k.contact.email) + '</span>']
+    ].map(function (r) { return '<div class="c-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('');
 
     root.innerHTML =
       '<section data-section="Intro" class="kit-hero">' +
-        '<div class="kicker">Media kit</div>' +
-        '<h1 class="wordmark">OG Ladka</h1>' +
-        '<p class="hello">Hi, I’m Hemansu, the person behind OG Ladka.</p>' +
+        '<h1 class="name">Hi, I’m Hemansu.</h1>' +
+        '<p class="hello">The person behind OG Ladka, from Bengaluru.</p>' +
         '<p class="pitch">' + esc(k.pitch) + '</p>' +
       '</section>' +
       '<section data-section="Numbers">' +
@@ -115,7 +108,6 @@
             '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
             '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
           '</div>' +
-          (saving > 0 ? '<p class="v-save">' + saving + '% less than making it and running ads yourself.</p>' : '') +
         '</div>' +
       '</section>' +
       '<section data-section="Collaboration">' +

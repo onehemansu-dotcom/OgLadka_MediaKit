@@ -2,11 +2,10 @@
 main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0px));padding-bottom:calc(56px + env(safe-area-inset-bottom,0px))}
 
 /* Opening */
-.kit-hero{display:flex;flex-direction:column;gap:12px;padding-top:8px}
-.kicker{font-size:12px;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--sub)}
-.wordmark{font-size:48px;line-height:1;font-weight:600;letter-spacing:-.045em}
-.hello{margin-top:8px;font-size:16px;color:var(--sub)}
-.pitch{font-size:18px;line-height:1.55;max-width:32ch;text-wrap:pretty}
+.kit-hero{display:flex;flex-direction:column;gap:6px;padding-top:12px}
+.kit-hero .name{font-size:40px}
+.hello{font-size:17px;color:var(--sub)}
+.pitch{margin-top:18px;font-size:18px;line-height:1.55;max-width:32ch;text-wrap:pretty}
 
 /* Numbers band */
 .band{background:var(--inv);color:var(--inv-ink);border-radius:26px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:hidden}
@@ -27,7 +26,7 @@ main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0
 .vid-meta{padding-left:2px;font-size:13px;color:var(--sub);font-variant-numeric:tabular-nums}
 
 /* What it works out to: numbers to scan, one line */
-.v-card{margin-top:16px;background:var(--surface);border-radius:24px;padding:24px 20px 22px;display:flex;flex-direction:column;gap:20px}
+.v-card{margin-top:16px;background:var(--surface);border-radius:24px;padding:24px 20px}
 .v-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .v-three div{min-width:0}
 .v-three div + div{padding-left:14px;border-left:1px solid var(--line)}
