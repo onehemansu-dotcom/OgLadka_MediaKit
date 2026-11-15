@@ -83,10 +83,17 @@
     ].map(function (r) { return '<div class="c-row"><span>' + r[0] + '</span><b>' + r[1] + '</b></div>'; }).join('');
 
     root.innerHTML =
-      '<section data-section="Intro" class="kit-hero">' +
-        '<h1 class="name">Hi, I’m Hemansu.</h1>' +
-        '<p class="hello">The person behind OG Ladka, from Bengaluru.</p>' +
-        '<p class="pitch">' + esc(k.pitch) + '</p>' +
+      '<section data-section="Intro" class="ig">' +
+        '<div class="ig-bar"><div class="ig-user">' + esc(k.contact.instagram) + VERIFIED + '</div>' +
+          '<div class="ig-icons"><a data-label="Social: Instagram" data-category="Social" aria-label="Instagram" href="https://www.instagram.com/' + esc(k.contact.instagram) + '/" target="_blank" rel="noopener">' + IG_ICON + '</a>' +
+          '<a data-label="Social: YouTube" data-category="Social" aria-label="YouTube" href="https://www.youtube.com/@' + esc(k.contact.youtube) + '" target="_blank" rel="noopener">' + YT_ICON + '</a></div></div>' +
+        '<div class="ig-top"><img class="ig-avatar" src="' + IMG + 'avatar.webp" alt="' + esc(k.contact.name) + '" />' +
+          '<div class="ig-right"><div class="ig-name">' + esc(k.contact.name) + '</div><div class="ig-stats">' +
+            '<div><b>' + medianText + '</b><span>per Reel</span></div>' +
+            '<div><b>' + shortK(n.views30) + '</b><span>in 30 days</span></div>' +
+            '<div><b>' + (eng * 100).toFixed(1) + '%</b><span>engagement</span></div>' +
+          '</div></div></div>' +
+        '<div class="ig-bio"><div class="ig-cat">The person behind OG Ladka, Bengaluru</div><p>' + esc(k.pitch) + '</p></div>' +
       '</section>' +
       '<section data-section="Numbers">' +
         '<h2 class="h2-sm">Recent performance</h2>' +
@@ -136,6 +143,7 @@
     document.title = 'OG Ladka media kit';
   }
 
+  var VERIFIED = '<svg class="ig-tick" viewBox="0 0 40 40" aria-label="Verified" role="img"><path fill="#0095F6" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z"/></svg>';
   var IG_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/></svg>';
   var YT_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="4"/><path d="M10.2 9.4v5.2l4.4-2.6z" fill="currentColor"/></svg>';
 
