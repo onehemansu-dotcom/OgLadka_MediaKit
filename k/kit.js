@@ -109,13 +109,13 @@
         '<p class="deal-note">Prices cover only what was asked for in your message or email. Anything added later is quoted separately.</p>' +
       '</section>' +
       '<section data-section="Value">' +
-        '<h2 class="h2-sm">What it works out to</h2>' +
+        '<h2 class="h2-sm">Cost breakdown</h2>' +
         '<div class="v-card">' +
           '<div class="v-four">' +
             '<div><b>' + medianText + '</b><span>views on a typical Reel</span></div>' +
-            '<div><b>₹' + (price / median).toFixed(2) + '</b><span>per view</span></div>' +
-            '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
-            '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
+            '<div><b>₹' + (price / median).toFixed(2) + '</b><span>cost per view</span></div>' +
+            '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>cost per like, comment or share</span></div>' +
+            '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>cost per 1,000 views</span></div>' +
           '</div>' +
         '</div>' +
       '</section>' +

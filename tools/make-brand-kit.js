@@ -174,7 +174,7 @@ function textCopy(p) {
       (p.notOffered.length ? ' Not offered: ' + p.notOffered.map((it) => it.title).join('; ') + '.' : '') +
       (priced.length ? ' Total ' + inr(total) + '.' : ''),
     'Prices cover only what was asked for in your message or email. Anything added later is quoted separately.',
-    'What it works out to: ' + medianText + ' views on a typical Reel, ₹' + (p.reel.price / median).toFixed(2) + ' per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' per engagement, ₹' + Math.round(p.reel.price / median * 1000) + ' per 1,000 views.',
+    'Cost breakdown: ' + medianText + ' views on a typical Reel, ₹' + (p.reel.price / median).toFixed(2) + ' cost per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' cost per like, comment or share, ₹' + Math.round(p.reel.price / median * 1000) + ' cost per 1,000 views.',
     'Contact details: phone and email.',
     'Footer: This custom media kit was made for ' + p.forName + '. Prices and numbers can change for other brands, depending on the latest performance and the deliverables. Instagram and YouTube links.',
     'Open until ' + p.expires + '.'
