@@ -118,8 +118,14 @@ if (originals.length !== 3) stop('pick exactly 3 originals');
 if (partnerships.length > 3) stop('3 partnerships at most');
 const work = partnerships.concat(originals);
 
+// Open for 70 days from the day it's made, then the page says it has expired and the daily
+// workflow (.github/workflows/expire-kits.yml) deletes the folder. Proof of what was sent lives in Notion.
+const KIT_DAYS = 70;
+const expires = new Date(new Date(spec.date + 'T12:00:00Z').getTime() + KIT_DAYS * 864e5).toISOString().slice(0, 10);
+
 const payload = {
   v: 2,
+  expires: expires,
   slug: slug,
   category: spec.category,
   date: spec.date,
@@ -133,6 +139,37 @@ const payload = {
   contact: JSON.parse(fs.readFileSync(path.join(__dirname, 'contact.json'), 'utf8')),
   numbers: numbers
 };
+
+
+// Plain text of the kit exactly as the brand sees it, for the quote's record in Notion (Quotes Sent).
+function textCopy(p) {
+  const n = p.numbers;
+  const t1 = (x) => x.toFixed(1).replace(/\.0$/, '');
+  const sk = (x) => (x >= 1e6 ? t1(x / 1e6) + 'M' : Math.round(x / 1e3) + 'K');
+  const inr = (x) => '₹' + Math.round(x).toLocaleString('en-IN');
+  const medianText = sk(n.median), median = parseFloat(medianText) * (medianText.endsWith('M') ? 1e6 : 1e3);
+  const eng = Math.round(n.engagement * 10) / 1000;
+  const views = (w) => w.views || (w.label && n.mostLoved && n.mostLoved[w.label]) || 0;
+  const vid = (w) => w.title + (views(w) ? ', ' + sk(views(w)) + ' views' : '');
+  const priced = p.items.filter((it) => it.price > 0);
+  const total = p.reel.price + priced.reduce((s, it) => s + it.price, 0);
+  const out = [
+    "Hi, I'm Hemansu. The person behind OG Ladka, from Bengaluru.",
+    p.pitch,
+    'Recent performance: ' + medianText + ' median views per Reel, ' + sk(n.views30) + ' views in the last 30 days, ' + n.nonFollowerPct.toFixed(1) + '% of views from new people, ' + (eng * 100).toFixed(1) + '% engagement rate (numbers of ' + n.date + ').',
+    p.partnerships.length ? 'Made for brands recently: ' + p.partnerships.map(vid).join('; ') + '.' : '',
+    'Audience favourites: ' + p.originals.map(vid).join('; ') + '.',
+    'This collaboration: ' + p.reel.title + ' ' + inr(p.reel.price) + ' (' + p.reel.desc.replace(/\.$/, '') + ').' +
+      (p.items.length ? ' Add-ons: ' + p.items.map((it) => it.title + ' ' + (it.price > 0 ? inr(it.price) : (it.note || 'Included'))).join('; ') + '.' : '') +
+      (p.notOffered.length ? ' Not offered: ' + p.notOffered.map((it) => it.title).join('; ') + '.' : '') +
+      (priced.length ? ' Total ' + inr(total) + '.' : ''),
+    'Prices cover only what was asked for in your message or email. Anything added later is quoted separately.',
+    'What it works out to: ₹' + (p.reel.price / median).toFixed(2) + ' per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' per engagement, ₹' + Math.round(p.reel.price / median * 1000) + ' per 1,000 views.',
+    'Contact details: phone and email. Footer: Instagram and YouTube.',
+    'Open until ' + p.expires + '.'
+  ].filter(Boolean);
+  return { text: out.join('\n'), total: total, addons: p.items.map((it) => it.title + ' ' + (it.price > 0 ? inr(it.price) : (it.note || 'Included'))).join('; ') };
+}
 
 function shell(opts) {
   const analytics = opts.preview ? '' : `<script async src="https://www.googletagmanager.com/gtag/js?id=G-GYS2RWZJ4T"></script>
@@ -164,6 +201,7 @@ function shell(opts) {
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <meta name="robots" content="noindex, nofollow" />
+<meta name="kit-expires" content="${expires}" />
 <meta name="referrer" content="no-referrer" />
 <title>OG Ladka media kit</title>
 <meta name="theme-color" content="#F4F4F4" media="(prefers-color-scheme: light)" />
@@ -200,6 +238,7 @@ if (previewDir) {
   const data = JSON.stringify(payload).replace(/</g, '\\u003c');
   fs.writeFileSync(path.join(previewDir, 'index.html'), shell({ preview: true, data: data }));
   console.log('Preview written to ' + path.join(previewDir, 'index.html') + ' (not encrypted, no tracking).');
+  console.log('\n--- Text copy ---\n' + textCopy(payload).text);
   process.exit(0);
 }
 
@@ -216,8 +255,9 @@ const dir = path.join(ROOT, 'k', id);
 fs.mkdirSync(dir, { recursive: true });
 fs.writeFileSync(path.join(dir, 'index.html'), shell({ preview: false, data: data }));
 
-let total = spec.reel + items.reduce((s, it) => s + (it.price || 0), 0);
+const copy = textCopy(payload);
 console.log('Kit for ' + spec.brand + ' (slug ' + slug + ')');
 console.log('Link: ' + SITE + 'k/' + id + '/#' + keyText);
-console.log('id ' + id + '  key ' + keyText);
-console.log('Reel ₹' + spec.reel.toLocaleString('en-IN') + items.map((it) => ', ' + it.title + (it.price ? ' ₹' + it.price.toLocaleString('en-IN') : ' ' + (it.note || ''))).join('') + '. Total ₹' + total.toLocaleString('en-IN'));
+console.log('id ' + id + '  key ' + keyText + '  open until ' + expires);
+console.log('Reel ' + spec.reel + '  Add-ons: ' + (copy.addons || 'none') + '  Total ' + copy.total);
+console.log('\n--- Text copy for Notion (Quotes Sent) ---\n' + copy.text);

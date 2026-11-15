@@ -211,7 +211,19 @@
     });
   }
 
+  // Each kit is open for 70 days from the day it was made (k.expires). After that it shows a short
+  // note with the contact details, and a daily GitHub workflow deletes the folder.
+  function expired(k) {
+    root.innerHTML = '<section class="kit-state"><h1 class="h2">This page has expired.</h1>' +
+      '<p>For a fresh quote, get in touch.</p>' +
+      '<div class="c-rows">' +
+        '<div class="c-row"><span>Phone</span><b><a href="tel:' + k.contact.phone.replace(/\s/g, '') + '">' + esc(k.contact.phone) + '</a></b></div>' +
+        '<div class="c-row"><span>Email</span><b class="sel">' + esc(k.contact.email) + '</b></div>' +
+      '</div></section>';
+  }
+
   load().then(function (k) {
+    if (k.expires && Date.now() >= new Date(k.expires + 'T00:00:00+05:30').getTime() && !window.KIT_IGNORE_EXPIRY) { expired(k); return; }
     return fresh(k.numbers).then(function (n) { render(k, n); track(k); });
   }).catch(function () { broken(); });
 })();
