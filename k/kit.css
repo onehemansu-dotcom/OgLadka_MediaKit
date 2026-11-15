@@ -65,7 +65,9 @@ main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0
 .c-row b{font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere;text-align:right}
 .c-row a:hover{opacity:.7}
 .sel{user-select:all;-webkit-user-select:all}
-main.kit footer.kit-foot{margin-top:-16px;display:flex;justify-content:center;gap:28px;padding-top:24px;border-top:1px solid var(--line)}
+main.kit footer.kit-foot{margin-top:-16px;display:flex;flex-direction:column;align-items:center;gap:14px;padding-top:24px;border-top:1px solid var(--line);text-align:center}
+.kit-made{max-width:44ch;font-size:12.5px;line-height:1.5;color:var(--sub);text-wrap:pretty}
+.kit-social{display:flex;justify-content:center;gap:28px}
 .kit-foot a{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--sub)}
 .kit-foot a:hover{color:var(--ink)}
 

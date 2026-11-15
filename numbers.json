@@ -7,11 +7,18 @@
   "median": 164232.5,
   "engagement": 4.99,
   "mostLoved": {
-    "Video: Matte Paint Care": 2800000,
-    "Video: Iridium Spark Plug": 971000,
-    "Video: Gear Shifting Guide": 2400000,
-    "Video: Engine Braking Explained": 1600000,
-    "Video: Insurance Rejected": 394000,
-    "Video: How to Legally Wrap a Bike": 918000
-  }
+    "Video: Matte Paint Care": 2762611,
+    "Video: Iridium Spark Plug": 974568,
+    "Video: Gear Shifting Guide": 2380152,
+    "Video: Engine Braking Explained": 1590491,
+    "Video: Insurance Rejected": 396994,
+    "Video: How to Legally Wrap a Bike": 918500
+  },
+  "partnerViews": {
+    "car101": 2381408,
+    "ktm": 31186,
+    "triumph": 9048,
+    "re": 62682
+  },
+  "reelViewsAsOf": "2026-11-16"
 }

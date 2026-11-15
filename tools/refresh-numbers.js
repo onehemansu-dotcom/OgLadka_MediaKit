@@ -115,7 +115,9 @@ const oldNumbers = fs.existsSync(numbersFile) ? JSON.parse(fs.readFileSync(numbe
 const numbers = {
   date: input.date, followers: input.followers, views30: input.views30, reached30: input.reached30,
   nonFollowerPct: input.nonFollowerPct, median: median, engagement: +(eng * 100).toFixed(2),
-  mostLoved: Object.assign({}, oldNumbers.mostLoved || {}, input.mostLoved || {})
+  mostLoved: Object.assign({}, oldNumbers.mostLoved || {}, input.mostLoved || {}),
+  partnerViews: Object.assign({}, oldNumbers.partnerViews || {}, input.partnerViews || {}),
+  reelViewsAsOf: input.mostLoved || input.partnerViews ? input.date : oldNumbers.reelViewsAsOf
 };
 
 if (!dry) {

@@ -11,11 +11,15 @@
 // spec.json (never commit it: it holds the quote in plain text; keep it in the lead's Notion page):
 // {
 //   "brand": "Acme Lubes",              board name in Brand Leads; the tracking slug comes from it
+//   "forName": "Acme Lubes",            named in the footer line (the agency's name if the brand isn't named)
 //   "category": "care",                 care | insurance | auto (picks default videos and benchmarks)
 //   "date": "2026-11-16",
 //   "pitch": "Two lines, only about what they gain, fitted to their message. Never echo their own words.",
 //   "partnerships": ["car101"],         optional, branded work that fits them ([] for none)
 //   "originals": ["matte", "iridium", "wrap"],   optional, exactly 3
+//      Either list can also hold videos from the Reels Audit in Notion as objects:
+//      {"title": "...", "href": "https://www.instagram.com/reel/<code>/", "img": "reel-<code>.webp", "views": 76620, "badge": "brand-car101.webp"}
+//      (img must already be in images/).
 //   "reel": 24999,                      reel price from the rate card
 //   "reelDesc": "...",                  optional
 //   "items": [ {"key": "story", "qty": 2}, {"key": "adrights"},           only what they asked for
@@ -89,7 +93,7 @@ const b64url = (buf) => Buffer.from(buf).toString('base64').replace(/\+/g, '-').
 
 const spec = JSON.parse(fs.readFileSync(process.argv[2] || stop('give the spec file'), 'utf8'));
 const cat = DEFAULTS[spec.category] || stop('category must be care, insurance or auto');
-if (!spec.brand || !spec.pitch) stop('brand and pitch are needed');
+if (!spec.brand || !spec.forName || !spec.pitch) stop('brand, forName and pitch are needed');
 if (!(spec.reel >= 1000)) stop('reel price missing');
 if (!/^\d{4}-\d{2}-\d{2}$/.test(spec.date || '')) stop('date like 2026-11-16 needed');
 
@@ -109,11 +113,17 @@ const items = (spec.items || []).map((it) => {
 });
 
 const partnerViews = numbers.partnerViews || {};
+function fromAudit(v) {
+  if (!v.title || !v.href || !v.img) stop('a video object needs title, href and img');
+  [v.img, v.badge].filter(Boolean).forEach((f) => fs.existsSync(path.join(ROOT, 'images', f)) || stop('missing image images/' + f));
+  return { title: v.title, href: v.href, img: v.img, badge: v.badge || '', views: v.views || 0 };
+}
 const partnerships = (spec.partnerships || cat.partnerships).map((k) => {
+  if (typeof k === 'object') return fromAudit(k);
   const p = PARTNERSHIPS[k] || stop('unknown partnership ' + k);
   return Object.assign({}, p, { views: (spec.previewViews && spec.previewViews[k]) || partnerViews[k] || 0 });
 });
-const originals = (spec.originals || cat.originals).map((k) => ORIGINALS[k] || stop('unknown original ' + k));
+const originals = (spec.originals || cat.originals).map((k) => (typeof k === 'object' ? fromAudit(k) : (ORIGINALS[k] || stop('unknown original ' + k))));
 if (originals.length !== 3) stop('pick exactly 3 originals');
 if (partnerships.length > 3) stop('3 partnerships at most');
 const work = partnerships.concat(originals);
@@ -127,6 +137,7 @@ const payload = {
   v: 2,
   expires: expires,
   slug: slug,
+  forName: spec.forName,
   category: spec.category,
   date: spec.date,
   pitch: spec.pitch,
@@ -165,7 +176,8 @@ function textCopy(p) {
       (priced.length ? ' Total ' + inr(total) + '.' : ''),
     'Prices cover only what was asked for in your message or email. Anything added later is quoted separately.',
     'What it works out to: ₹' + (p.reel.price / median).toFixed(2) + ' per view, ₹' + (p.reel.price / (median * eng)).toFixed(2) + ' per engagement, ₹' + Math.round(p.reel.price / median * 1000) + ' per 1,000 views.',
-    'Contact details: phone and email. Footer: Instagram and YouTube.',
+    'Contact details: phone and email.',
+    'Footer: This custom media kit was made for ' + p.forName + '. Prices and numbers can change for other brands, depending on the latest performance and the deliverables. Instagram and YouTube links.',
     'Open until ' + p.expires + '.'
   ].filter(Boolean);
   return { text: out.join('\n'), total: total, addons: p.items.map((it) => it.title + ' ' + (it.price > 0 ? inr(it.price) : (it.note || 'Included'))).join('; ') };

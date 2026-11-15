@@ -126,8 +126,11 @@
         '<div class="c-rows">' + contact + '</div>' +
       '</section>' +
       '<footer class="kit-foot">' +
+        (k.forName ? '<p class="kit-made">This custom media kit was made for ' + esc(k.forName) + '. Prices and numbers can change for other brands, depending on the latest performance and the deliverables.</p>' : '') +
+        '<div class="kit-social">' +
         '<a data-label="Social: Instagram" data-category="Social" href="https://www.instagram.com/' + esc(k.contact.instagram) + '/" target="_blank" rel="noopener">' + IG_ICON + 'Instagram</a>' +
         '<a data-label="Social: YouTube" data-category="Social" href="https://www.youtube.com/@' + esc(k.contact.youtube) + '" target="_blank" rel="noopener">' + YT_ICON + 'YouTube</a>' +
+        '</div>' +
       '</footer>';
     root.classList.add('kit-in');
     document.title = 'OG Ladka media kit';
