@@ -12,7 +12,8 @@
 //   "last10": [{"views": 258000, "interactions": 12000}, ...],   // 10 most recent non-pinned Reels
 //   "mostLoved": {"Video: Matte Paint Care": 2750000, ...}        // optional, keyed by data-label
 // }
-// Every run is saved to tools/history.json so the next refresh can compare against it.
+// Every run is saved to tools/history.json so the next refresh can compare against it,
+// and to numbers.json, which every brand kit in k/ reads.
 const fs = require('fs');
 const path = require('path');
 const { num, readPrice, writePrice } = require('./kit-rate');
@@ -108,8 +109,18 @@ if (prev) {
 }
 report.push('Rate unchanged at ₹' + price.toLocaleString('en-IN') + ', which now works out to ₹' + (price / num(shortK(median))).toFixed(2) + ' per view.');
 
+// Brand kits (k/) read their numbers from numbers.json, so every kit updates with this refresh.
+const numbersFile = path.resolve(__dirname, '..', 'numbers.json');
+const oldNumbers = fs.existsSync(numbersFile) ? JSON.parse(fs.readFileSync(numbersFile, 'utf8')) : {};
+const numbers = {
+  date: input.date, followers: input.followers, views30: input.views30, reached30: input.reached30,
+  nonFollowerPct: input.nonFollowerPct, median: median, engagement: +(eng * 100).toFixed(2),
+  mostLoved: Object.assign({}, oldNumbers.mostLoved || {}, input.mostLoved || {})
+};
+
 if (!dry) {
   fs.writeFileSync(file, html);
   fs.writeFileSync(historyFile, JSON.stringify(history.filter((h) => h.date !== input.date).concat([entry]), null, 2) + '\n');
+  fs.writeFileSync(numbersFile, JSON.stringify(numbers, null, 2) + '\n');
 }
 console.log((dry ? 'DRY RUN, nothing written\n' : '') + changes.join('\n') + '\n' + report.join('\n'));
