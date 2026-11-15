@@ -1,6 +1,7 @@
-// Builds one brand's own kit page: two screens, their numbers, work that fits, and their quote.
-// The repo is public, so the brand's details and quote are encrypted inside the page. The key goes
-// in the link after the #, and only the person with the link can read it.
+// Builds one brand's own media kit page: about two phone screens with the numbers, the brand's
+// relevant partnerships and originals, what the Reel works out to, and only what they asked for.
+// The page never says it was made for them. The repo is public, so the details are encrypted
+// inside the page; the key goes in the link after the #, and only someone with the link can read it.
 //
 // Usage (from the repo root):
 //   node tools/make-brand-kit.js spec.json                 new kit, prints the link to send
@@ -10,19 +11,16 @@
 // spec.json (never commit it: it holds the quote in plain text; keep it in the lead's Notion page):
 // {
 //   "brand": "Acme Lubes",              board name in Brand Leads; the tracking slug comes from it
-//   "forName": "Acme Lubes",            shown as "Prepared for ..." (agency name if the brand isn't named)
-//   "category": "care",                 care | insurance | auto (picks default work and add-ons)
+//   "category": "care",                 care | insurance | auto (picks default videos and benchmarks)
 //   "date": "2026-11-16",
-//   "pitch": "One or two lines on why this fits them.",
-//   "work": ["matte", "car101", "iridium"],          optional, 3 keys from WORK below
-//   "reel": 24999,                                    reel price from the rate card
-//   "reelDesc": "Up to 60 seconds, collab post",      optional
-//   "items": [ {"key": "story", "qty": 2}, {"key": "shorts"},
-//              {"title": "Amazon review", "desc": "...", "note": "Product cost at actuals"},
-//              {"title": "Anything else", "desc": "...", "price": 4999} ],
-//   "notOffered": [ {"title": "DM automation"} ],
-//   "addons": ["partnership", "usage"],               optional, default by category
-//   "quoteLead": "...", "closer": "...", "wa": "..."  optional
+//   "pitch": "Two lines on how this helps them, in OG Ladka's voice. Never echo their own words.",
+//   "partnerships": ["car101"],         optional, branded work that fits them ([] for none)
+//   "originals": ["matte", "iridium", "wrap"],   optional, exactly 3
+//   "reel": 24999,                      reel price from the rate card
+//   "reelDesc": "...",                  optional
+//   "items": [ {"key": "story", "qty": 2}, {"key": "adrights"},           only what they asked for
+//              {"title": "Amazon review", "note": "Product cost"}, {"title": "Other", "price": 4999} ],
+//   "notOffered": [ {"title": "DM automation"} ]
 // }
 const fs = require('fs');
 const path = require('path');
@@ -31,45 +29,59 @@ const crypto = require('crypto');
 const ROOT = path.resolve(__dirname, '..');
 const SITE = 'https://onehemansu-dotcom.github.io/OgLadka_MediaKit/';
 
-// Public work, the same Reels and collaborations as the main kit.
-const WORK = {
-  matte:     { label: 'Video: Matte Paint Care', title: 'Matte paint care', img: 'reel-matte.webp', href: 'https://www.instagram.com/ogladkaa/reel/DVObL38CSEV/', meta: '2.8M views' },
-  iridium:   { label: 'Video: Iridium Spark Plug', title: 'Iridium spark plug?', img: 'reel-iridium.webp', href: 'https://www.instagram.com/ogladkaa/reel/Da3FWCEpRuM/', meta: '971K views' },
-  gear:      { label: 'Video: Gear Shifting Guide', title: 'Gear shifting guide', img: 'reel-gear.webp', href: 'https://www.instagram.com/ogladkaa/reel/DWRpaDoNwxY/', meta: '2.4M views' },
-  engine:    { label: 'Video: Engine Braking Explained', title: 'Engine braking explained', img: 'reel-engine-braking.webp', href: 'https://www.instagram.com/ogladkaa/reel/DUyRCN9Es59/', meta: '1.6M views' },
-  insurance: { label: 'Video: Insurance Rejected', title: 'Insurance rejected', img: 'reel-insurance.webp', href: 'https://www.instagram.com/ogladkaa/reel/DcObLzBJJzY/', meta: '394K views' },
-  wrap:      { label: 'Video: How to Legally Wrap a Bike', title: 'How to legally wrap a bike', img: 'reel-wrap.webp', href: 'https://www.instagram.com/ogladkaa/reel/DVlsLxeCf6Q/', meta: '918K views' },
-  ktm:       { title: 'KTM', meta: '160 Duke and RC launch', img: 'collab-ktm.webp', badge: 'brand-ktm.webp', href: 'https://www.instagram.com/reel/DTuy4o8Cfy8/' },
-  triumph:   { title: 'Triumph', meta: '400cc range launch', img: 'collab-triumph.webp', badge: 'brand-triumph.webp', href: 'https://www.instagram.com/reel/DLb-AX2pDCp/' },
-  re:        { title: 'Royal Enfield', meta: 'Guerrilla 450 first ride', img: 'collab-re.webp', badge: 'brand-royalenfield.webp', href: 'https://www.instagram.com/reel/DcgdTK8hUYI/' },
-  car101:    { title: 'Car101', meta: 'Tyre polish collab', img: 'collab-car101.webp', badge: 'brand-car101.webp', href: 'https://www.instagram.com/reel/DdMNz_6pp-P/' }
+// Originals: made independently. Views come from numbers.json (label) on every refresh.
+const ORIGINALS = {
+  matte:     { label: 'Video: Matte Paint Care', title: 'Matte paint care', img: 'reel-matte.webp', href: 'https://www.instagram.com/ogladkaa/reel/DVObL38CSEV/' },
+  iridium:   { label: 'Video: Iridium Spark Plug', title: 'Iridium spark plug?', img: 'reel-iridium.webp', href: 'https://www.instagram.com/ogladkaa/reel/Da3FWCEpRuM/' },
+  gear:      { label: 'Video: Gear Shifting Guide', title: 'Gear shifting guide', img: 'reel-gear.webp', href: 'https://www.instagram.com/ogladkaa/reel/DWRpaDoNwxY/' },
+  engine:    { label: 'Video: Engine Braking Explained', title: 'Engine braking explained', img: 'reel-engine-braking.webp', href: 'https://www.instagram.com/ogladkaa/reel/DUyRCN9Es59/' },
+  insurance: { label: 'Video: Insurance Rejected', title: 'Insurance rejected', img: 'reel-insurance.webp', href: 'https://www.instagram.com/ogladkaa/reel/DcObLzBJJzY/' },
+  wrap:      { label: 'Video: How to Legally Wrap a Bike', title: 'How to legally wrap a bike', img: 'reel-wrap.webp', href: 'https://www.instagram.com/ogladkaa/reel/DVlsLxeCf6Q/' }
+};
+// Brand partnerships. views: fill in when known (numbers.json "partnerViews" overrides by key).
+const PARTNERSHIPS = {
+  ktm:     { title: 'KTM', sub: '160 Duke and RC launch', img: 'collab-ktm.webp', badge: 'brand-ktm.webp', href: 'https://www.instagram.com/reel/DTuy4o8Cfy8/' },
+  triumph: { title: 'Triumph', sub: '400cc range launch', img: 'collab-triumph.webp', badge: 'brand-triumph.webp', href: 'https://www.instagram.com/reel/DLb-AX2pDCp/' },
+  re:      { title: 'Royal Enfield', sub: 'Guerrilla 450 first ride', img: 'collab-re.webp', badge: 'brand-royalenfield.webp', href: 'https://www.instagram.com/reel/DcgdTK8hUYI/' },
+  car101:  { title: 'Car101', sub: 'Tyre polish', img: 'collab-car101.webp', badge: 'brand-car101.webp', href: 'https://www.instagram.com/reel/DdMNz_6pp-P/' }
 };
 
-// Add-ons as a share of this brand's Reel price (Hemansu's rate card, Mon, 16 Nov 2026).
+// Priced as a share of this brand's Reel (Hemansu's rate card, Mon, 16 Nov 2026). Only what they ask for goes on the kit.
 const ADDONS = {
-  partnership: { title: 'Partnership ads, 30 days', pct: 0.30, desc: 'Run the Reel as an ad from my handle for 30 days.' },
-  usage:       { title: 'Usage rights, 30 days', pct: 0.25, desc: 'Use the video in your own ads, website or stores for 30 days.' },
-  excl30:      { title: 'Exclusivity, 30 days', pct: 0.30, desc: 'No competing brand in your category on my page for 30 days.' },
-  excl90:      { title: 'Exclusivity, 90 days', pct: 0.50, desc: 'No competing brand in your category on my page for 90 days.' },
-  story:       { title: 'Instagram story', pct: 0.15, desc: 'Each story, with your link on it.' },
-  shorts:      { title: 'YouTube Shorts repost', pct: 0.15, desc: 'The same Reel posted on my YouTube Shorts.' },
-  linkbio:     { title: 'Link in bio, 7 days', pct: 0.10, desc: 'Your link in my Instagram bio for 7 days.' },
-  rush:        { title: 'Rush delivery', pct: 0.25, desc: 'Live within 48 hours of the brief.' },
-  revision:    { title: 'Extra edit round', flat: 5999, desc: 'Two rounds of changes are included. Each round after that.' },
-  eventHalf:   { title: 'Event coverage, half day', pct: 0.40, desc: 'Up to 4 hours on site in Bangalore. Travel and stay outside Bangalore at actuals.' },
-  eventFull:   { title: 'Event coverage, full day', pct: 0.75, desc: 'A full day on site in Bangalore. Travel and stay outside Bangalore at actuals.' }
+  story:       { title: 'Instagram story', plural: 'Instagram stories', pct: 0.15 },
+  adrights:    { title: 'Ad rights, 30 days', pct: 0.30 },
+  partnership: { title: 'Partnership ads, 30 days', pct: 0.30 },
+  usage:       { title: 'Usage rights, 30 days', pct: 0.25 },
+  excl30:      { title: 'Exclusivity, 30 days', pct: 0.30 },
+  excl90:      { title: 'Exclusivity, 90 days', pct: 0.50 },
+  shorts:      { title: 'YouTube Shorts repost', pct: 0.15 },
+  linkbio:     { title: 'Link in bio, 7 days', pct: 0.10 },
+  rush:        { title: 'Rush delivery, under 48 hours', pct: 0.25 },
+  revision:    { title: 'Extra edit round', flat: 5999 },
+  eventHalf:   { title: 'Event coverage, half day', pct: 0.40, desc: 'Travel and stay outside Bangalore at actuals.' },
+  eventFull:   { title: 'Event coverage, full day', pct: 0.75, desc: 'Travel and stay outside Bangalore at actuals.' }
 };
-const BASE_ADDONS = ['partnership', 'usage', 'excl30', 'excl90', 'story', 'shorts', 'linkbio', 'rush', 'revision'];
-const DEFAULTS = {
-  care:      { work: ['matte', 'car101', 'iridium'], addons: BASE_ADDONS },
-  insurance: { work: ['insurance', 'wrap', 'ktm'], addons: BASE_ADDONS },
-  auto:      { work: ['ktm', 'triumph', 're'], addons: BASE_ADDONS.concat(['eventHalf', 'eventFull']) }
-};
-const ITEM_DESC = { story: 'With your link on it.', shorts: '' };
 
-// Prices end in 9, like the rate card: 3,749.85 becomes 3,749.
+// What a brand would otherwise pay, per 1,000 views. Sources (checked Mon, 16 Nov 2026):
+//  creator rate: Kofluence 2025 report (micro creators about Rs 100-150 per 1,000 views), upGrowth 2026
+//    (creators fair up to 1.5x paid video views at Rs 25-180), finance creators 60-120% more (upGrowth 2026)
+//  ads: upGrowth 2026, Instagram Reels ads Rs 45-140 per 1,000, fintech Rs 200-400 per 1,000
+//  production: Boss Wallah 2026, agency shoot day from Rs 40,000 plus edit from Rs 10,000
+const GENERAL_NOTE = 'Typical creator rate: about ₹150 per 1,000 views in India (Kofluence 2025, upGrowth 2026). Doing it yourself: an agency shoot and edit from ₹50,000 (Boss Wallah 2026) plus Instagram Reels ads from ₹45 per 1,000 views (upGrowth 2026).';
+const BENCH = {
+  care:      { creatorPer1k: 150, adPer1k: 45, productionFrom: 50000, note: GENERAL_NOTE },
+  auto:      { creatorPer1k: 150, adPer1k: 45, productionFrom: 50000, note: GENERAL_NOTE },
+  insurance: { creatorPer1k: 240, adPer1k: 200, productionFrom: 50000,
+    note: 'Typical creator rate: finance creators charge 60 to 120% more than the ₹150 per 1,000 views most Indian creators get (upGrowth 2026, Kofluence 2025). Doing it yourself: an agency shoot and edit from ₹50,000 (Boss Wallah 2026) plus fintech ads on Instagram from ₹200 per 1,000 views (upGrowth 2026).' }
+};
+const DEFAULTS = {
+  care:      { partnerships: ['car101'], originals: ['matte', 'iridium', 'wrap'] },
+  auto:      { partnerships: ['ktm', 'triumph', 're'], originals: ['gear', 'engine', 'wrap'] },
+  insurance: { partnerships: [], originals: ['insurance', 'wrap', 'engine'] }
+};
+
+// Prices end in 9, like the rate card: 5,999.70 becomes 5,999.
 const r9 = (x) => Math.max(99, Math.round(x / 50) * 50 - 1);
-const addonPrice = (a, reel) => (a.flat ? a.flat : r9(reel * a.pct));
 
 function stop(msg) { console.error('STOP: ' + msg); process.exit(2); }
 function arg(name) { const i = process.argv.indexOf(name); return i > -1 ? process.argv[i + 1] : null; }
@@ -77,52 +89,47 @@ const b64url = (buf) => Buffer.from(buf).toString('base64').replace(/\+/g, '-').
 
 const spec = JSON.parse(fs.readFileSync(process.argv[2] || stop('give the spec file'), 'utf8'));
 const cat = DEFAULTS[spec.category] || stop('category must be care, insurance or auto');
-if (!spec.brand || !spec.forName || !spec.pitch) stop('brand, forName and pitch are needed');
+if (!spec.brand || !spec.pitch) stop('brand and pitch are needed');
 if (!(spec.reel >= 1000)) stop('reel price missing');
 if (!/^\d{4}-\d{2}-\d{2}$/.test(spec.date || '')) stop('date like 2026-11-16 needed');
 
 const numbers = JSON.parse(fs.readFileSync(path.join(ROOT, 'numbers.json'), 'utf8'));
 const slug = spec.brand.toLowerCase().replace(/[^a-z0-9]/g, '');
 
-const usedKeys = [];
 const items = (spec.items || []).map((it) => {
   if (it.key) {
     const a = ADDONS[it.key] || stop('unknown item key ' + it.key);
-    usedKeys.push(it.key);
     const qty = it.qty > 1 ? it.qty : 1;
-    const price = it.price > 0 ? it.price : addonPrice(a, spec.reel) * qty;
-    const title = it.title || (qty > 1 ? a.title.replace(/y$/, 'ie') + 's, ' + qty : a.title);
-    return { title: title, desc: it.desc != null ? it.desc : (ITEM_DESC[it.key] != null ? ITEM_DESC[it.key] : a.desc), price: price };
+    const price = it.price > 0 ? it.price : (a.flat ? a.flat * qty : r9(spec.reel * a.pct * qty));
+    const title = it.title || (qty > 1 ? qty + ' ' + (a.plural || a.title) : a.title);
+    return { title: title, desc: it.desc || a.desc || '', price: price };
   }
   if (!it.title) stop('every item needs a key or a title');
   return { title: it.title, desc: it.desc || '', price: it.price > 0 ? it.price : 0, note: it.note || '' };
 });
 
-const addonKeys = (spec.addons || cat.addons).filter((k) => usedKeys.indexOf(k) === -1);
-const addons = addonKeys.map((k) => {
-  const a = ADDONS[k] || stop('unknown add-on ' + k);
-  return { title: a.title, desc: a.desc, price: addonPrice(a, spec.reel) };
+const partnerViews = numbers.partnerViews || {};
+const partnerships = (spec.partnerships || cat.partnerships).map((k) => {
+  const p = PARTNERSHIPS[k] || stop('unknown partnership ' + k);
+  return Object.assign({}, p, { views: partnerViews[k] || 0 });
 });
-
-const work = (spec.work || cat.work).map((k) => WORK[k] || stop('unknown work ' + k));
-if (work.length !== 3) stop('pick exactly 3 pieces of work');
+const originals = (spec.originals || cat.originals).map((k) => ORIGINALS[k] || stop('unknown original ' + k));
+if (originals.length !== 3) stop('pick exactly 3 originals');
+if (partnerships.length > 3) stop('3 partnerships at most');
+const work = partnerships.concat(originals);
 
 const payload = {
-  v: 1,
+  v: 2,
   slug: slug,
-  forName: spec.forName,
   category: spec.category,
   date: spec.date,
   pitch: spec.pitch,
-  work: work,
-  workTitle: spec.workTitle || '',
-  reel: { title: 'Integrated Reel', desc: spec.reelDesc || 'Up to 60 seconds, collab post', price: spec.reel },
+  partnerships: partnerships,
+  originals: originals,
+  reel: { title: 'Integrated Reel', desc: spec.reelDesc || 'Collab post on Instagram, up to 60 seconds.', price: spec.reel },
   items: items,
   notOffered: spec.notOffered || [],
-  addons: addons,
-  quoteLead: spec.quoteLead || '',
-  closer: spec.closer || '',
-  wa: spec.wa || ('Hi Hemansu, this is ___ from ' + spec.forName + '. We went through the quote and would like to talk.'),
+  bench: BENCH[spec.category],
   numbers: numbers
 };
 
@@ -162,8 +169,8 @@ function shell(opts) {
 <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)" />
 <meta name="color-scheme" content="light dark" />
 <meta property="og:type" content="website" />
-<meta property="og:title" content="Hi, I'm Hemansu. Your OG Ladka media kit" />
-<meta property="og:description" content="Numbers, work that fits, and your quote." />
+<meta property="og:title" content="OG Ladka media kit" />
+<meta property="og:description" content="Numbers, brand partnerships, originals and commercials." />
 <meta property="og:image" content="${SITE}og-image.jpg" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
@@ -174,16 +181,10 @@ function shell(opts) {
 ${icons}${css}
 ${analytics}</head>
 <body>
-<header class="bar">
-  <nav class="seg seg-2" aria-label="Sections">
-    <a data-label="Nav: Why me" href="#why" data-tab="why" class="on">Why me</a>
-    <a data-label="Nav: Your quote" href="#quote" data-tab="quote">Your quote</a>
-  </nav>
-</header>
 <main id="kit" class="single kit">
-  <section class="kit-state"><p>Loading your kit.</p></section>
+  <section class="kit-state"><p>Loading.</p></section>
 </main>
-<noscript><p style="padding:24px">This page needs JavaScript. Message me on WhatsApp at +91 76763 37153.</p></noscript>
+<noscript><p style="padding:24px">This page needs JavaScript. Call +91 76763 37153.</p></noscript>
 <script id="kit-data" type="application/octet-stream"${opts.preview ? ' data-plain="1"' : ''}>${opts.data}</script>
 ${js}
 </body>
@@ -215,7 +216,7 @@ fs.mkdirSync(dir, { recursive: true });
 fs.writeFileSync(path.join(dir, 'index.html'), shell({ preview: false, data: data }));
 
 let total = spec.reel + items.reduce((s, it) => s + (it.price || 0), 0);
-console.log('Kit for ' + spec.forName + ' (slug ' + slug + ')');
+console.log('Kit for ' + spec.brand + ' (slug ' + slug + ')');
 console.log('Link: ' + SITE + 'k/' + id + '/#' + keyText);
 console.log('id ' + id + '  key ' + keyText);
 console.log('Reel ₹' + spec.reel.toLocaleString('en-IN') + items.map((it) => ', ' + it.title + (it.price ? ' ₹' + it.price.toLocaleString('en-IN') : ' ' + (it.note || ''))).join('') + '. Total ₹' + total.toLocaleString('en-IN'));

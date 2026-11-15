@@ -1,10 +1,10 @@
-// Brand kit page. Every brand gets its own page in k/<id>/ with the quote encrypted inside it,
+// Brand kit page. Every brand gets its own page in k/<id>/ with its details encrypted inside it,
 // because this repo is public. The key travels in the link after the # (browsers never send it
-// to a server), so only someone with the link can read the quote.
+// to a server), so only someone with the link can read it.
 // Built by tools/make-brand-kit.js. Numbers come from ../../numbers.json, so a refresh updates every kit.
 (function () {
   var LIVE = location.hostname === 'onehemansu-dotcom.github.io';
-  var WA = '917676337153';
+  var PHONE = '+917676337153', PHONE_TEXT = '+91 76763 37153';
   var IMG = window.KIT_IMG || '../../images/';
   var root = document.getElementById('kit');
 
@@ -51,119 +51,113 @@
     return m[d.getUTCMonth()] + ' ' + d.getUTCDate() + ', ' + d.getUTCFullYear();
   }
 
-  var CHEV = '<svg class="chev" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>';
-  var WA_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><path d="M4.5 19.5l1.2-3.6A8 8 0 1 1 8.4 18.6z"/><path d="M9.2 8.6c.2-.5.6-.5.9-.5l.6.1 1 2.1-.6.9c.5 1 1.3 1.8 2.3 2.3l.9-.6 2.1 1-.1.6c-.1.6-.9 1.3-1.7 1.3-2.6 0-5.9-3.3-5.9-5.9 0-.5.2-1 .5-1.3z" stroke-width="1.3"/></svg>';
-  var IG_ICON = '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/></svg>';
+  function videos(list, n, group) {
+    var cls = 'vids vids-' + Math.min(list.length, 3);
+    return '<div class="' + cls + '">' + list.map(function (w) {
+      var views = w.views > 0 ? w.views : (w.label && n.mostLoved && n.mostLoved[w.label] > 0 ? n.mostLoved[w.label] : 0);
+      var meta = views ? shortK(views) + ' views' : (w.meta || '');
+      return '<a data-label="' + group + ': ' + esc(w.title) + '" data-category="' + group + '" class="vid" href="' + esc(w.href) + '" target="_blank" rel="noopener">' +
+        '<div class="thumb"><img src="' + IMG + esc(w.img) + '" alt="' + esc(w.title) + '" />' +
+        (w.badge ? '<img class="badge" src="' + IMG + esc(w.badge) + '" alt="" />' : '') + '</div>' +
+        '<div class="vid-text"><div class="vid-title">' + esc(w.title) + '</div>' +
+        (w.sub ? '<div class="vid-sub">' + esc(w.sub) + '</div>' : '') +
+        '<div class="vid-meta">' + esc(meta) + '</div></div></a>';
+    }).join('') + '</div>';
+  }
 
   function render(k, n) {
     var medianText = shortK(n.median);
     var median = fromShort(medianText);
     var eng = Math.round(n.engagement * 10) / 1000;
-    var engText = (eng * 100).toFixed(1) + '%';
-    var waUrl = 'https://wa.me/' + WA + '?text=' + encodeURIComponent(k.wa);
+    var price = k.reel.price;
 
-    var work = k.work.map(function (w) {
-      var meta = w.meta;
-      if (w.label && n.mostLoved && n.mostLoved[w.label] > 0) meta = shortK(n.mostLoved[w.label]) + ' views';
-      return '<a data-label="Work: ' + esc(w.title) + '" data-category="Work" class="reel" href="' + esc(w.href) + '" target="_blank" rel="noopener">' +
-        '<div class="thumb"><img src="' + IMG + esc(w.img) + '" alt="' + esc(w.title) + ' Reel thumbnail" />' +
-        (w.badge ? '<img class="badge" src="' + IMG + esc(w.badge) + '" alt="" />' : '') + '</div>' +
-        '<div class="reel-title">' + esc(w.title) + '</div><div class="reel-meta">' + esc(meta) + '</div></a>';
+    // What a brand would otherwise pay for the same reach (sources in tools/make-brand-kit.js).
+    var b = k.bench;
+    var market = Math.round(median * b.creatorPer1k / 1000 / 100) * 100;
+    var diy = Math.floor((b.productionFrom + median * b.adPer1k / 1000) / 1000) * 1000;
+    var bars = [{ label: 'Making it yourself and running ads', amt: diy, from: true, cls: 'bar-them' }];
+    if (price < market) bars.push({ label: 'Typical creator rate for this reach', amt: market, cls: 'bar-them' });
+    bars.push({ label: 'OG Ladka', amt: price, cls: 'bar-us' });
+    var max = Math.max.apply(null, bars.map(function (x) { return x.amt; }));
+    var barHtml = bars.map(function (x) {
+      return '<div class="bar-row ' + x.cls + '"><div class="bar-top"><span>' + esc(x.label) + '</span><b>' + (x.from ? 'from ' : '') + inr(x.amt) + '</b></div>' +
+        '<div class="bar-track"><i style="width:' + Math.max(6, Math.round(x.amt / max * 100)) + '%"></i></div></div>';
     }).join('');
+    var saving = Math.round((1 - price / diy) * 100);
 
-    var total = k.reel.price;
-    var rows = '<div class="q-row" data-label="Quote: ' + esc(k.reel.title) + '" data-category="Quote"><div><div class="row-title">' + esc(k.reel.title) + '</div>' +
-      '<div class="row-desc">' + esc(k.reel.desc) + '</div></div><span class="q-amt">' + inr(k.reel.price) + '</span></div>';
-    k.items.forEach(function (it) {
-      if (it.price > 0) total += it.price;
-      rows += '<div class="q-row" data-label="Quote: ' + esc(it.title) + '" data-category="Quote"><div><div class="row-title">' + esc(it.title) + '</div>' +
+    var total = price, priced = false;
+    var rows = k.items.map(function (it) {
+      if (it.price > 0) { total += it.price; priced = true; }
+      return '<div class="q-row" data-label="Collab: ' + esc(it.title) + '" data-category="Collab"><div><div class="row-title">' + esc(it.title) + '</div>' +
         (it.desc ? '<div class="row-desc">' + esc(it.desc) + '</div>' : '') + '</div>' +
         (it.price > 0 ? '<span class="q-amt">' + inr(it.price) + '</span>' : '<span class="q-amt muted">' + esc(it.note || 'Included') + '</span>') + '</div>';
-    });
-    (k.notOffered || []).forEach(function (it) {
-      rows += '<div class="q-row" data-label="Quote: ' + esc(it.title) + '" data-category="Quote"><div><div class="row-title">' + esc(it.title) + '</div>' +
+    }).join('') + (k.notOffered || []).map(function (it) {
+      return '<div class="q-row" data-label="Collab: ' + esc(it.title) + '" data-category="Collab"><div><div class="row-title">' + esc(it.title) + '</div>' +
         (it.desc ? '<div class="row-desc">' + esc(it.desc) + '</div>' : '') + '</div><span class="q-amt muted">Not offered</span></div>';
-    });
-    if (k.items.some(function (it) { return it.price > 0; })) {
-      rows += '<div class="q-row q-total"><div class="row-title">Total</div><span class="q-amt">' + inr(total) + '</span></div>';
-    }
-
-    var addons = (k.addons || []).map(function (a) {
-      return '<details class="addon"><summary data-label="Add-on: ' + esc(a.title) + '" data-category="Add-on"><span>' + esc(a.title) + '</span>' +
-        '<span class="q-amt">' + inr(a.price) + '</span></summary><p>' + esc(a.desc) + '</p></details>';
     }).join('');
 
     root.innerHTML =
-      '<section data-section="Intro" id="why" class="kit-hero">' +
-        '<div class="for">Prepared for <b>' + esc(k.forName) + '</b></div>' +
-        '<div><h1 class="name">Hi, I’m Hemansu.</h1><div class="place">Automotive creator, OG Ladka. Bangalore.</div></div>' +
+      '<section data-section="Intro" class="kit-hero">' +
+        '<div class="kicker">Media kit</div>' +
+        '<h1 class="wordmark">OG Ladka</h1>' +
+        '<p class="hello">Hi, I’m Hemansu, the person behind OG Ladka.</p>' +
         '<p class="pitch">' + esc(k.pitch) + '</p>' +
       '</section>' +
       '<section data-section="Numbers">' +
-        '<div class="tiles">' +
-          '<div class="tile"><div class="tile-num">' + medianText + '</div><div class="tile-label">Median views per Reel</div></div>' +
-          '<div class="tile"><div class="tile-num">' + shortK(n.views30) + '</div><div class="tile-label">Views, last 30 days</div></div>' +
-          '<div class="tile"><div class="tile-num">' + n.nonFollowerPct.toFixed(1) + '%</div><div class="tile-label">Non-follower views</div></div>' +
-          '<div class="tile"><div class="tile-num">' + engText + '</div><div class="tile-label">Engagement rate</div></div>' +
+        '<div class="band">' +
+          '<div class="band-cell"><div class="band-num">' + medianText + '</div><div class="band-label">Median views per Reel</div></div>' +
+          '<div class="band-cell"><div class="band-num">' + shortK(n.views30) + '</div><div class="band-label">Views in the last 30 days</div></div>' +
+          '<div class="band-cell"><div class="band-num">' + n.nonFollowerPct.toFixed(1) + '%</div><div class="band-label">Of views from new people</div></div>' +
+          '<div class="band-cell"><div class="band-num">' + (eng * 100).toFixed(1) + '%</div><div class="band-label">Engagement rate</div></div>' +
         '</div>' +
-        '<p class="foot">' + trim1(n.followers / 1e3) + 'K followers. Last 10 Reels and last 30 days, from Instagram insights on ' + esc(niceDate(n.date)) + '.</p>' +
+        '<p class="foot">Based on recent numbers, ' + esc(niceDate(n.date)) + '.</p>' +
       '</section>' +
-      '<section data-section="Work">' +
-        '<h2 class="h2-sm">' + esc(k.workTitle || 'Work that fits') + '</h2>' +
-        '<div class="reels">' + work + '</div>' +
+      (k.partnerships && k.partnerships.length ?
+        '<section data-section="Brand Partnerships"><h2 class="h2-sm">Brand partnerships</h2>' + videos(k.partnerships, n, 'Partnership') + '</section>' : '') +
+      '<section data-section="Originals"><h2 class="h2-sm">Originals</h2>' + videos(k.originals, n, 'Original') + '</section>' +
+      '<section data-section="Value" class="value">' +
+        '<h2 class="h2-sm">What it works out to</h2>' +
+        '<div class="v-card">' +
+          '<div class="v-head"><div class="v-big">₹' + (price / median).toFixed(2) + '</div><div class="v-unit">per view on a Reel</div></div>' +
+          '<div class="v-grid">' +
+            '<div><b>' + medianText + '</b><span>median views</span></div>' +
+            '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
+            '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
+          '</div>' +
+          '<div class="bars">' + barHtml + '</div>' +
+          (saving > 0 ? '<p class="v-save">About ' + saving + '% less than making and promoting a Reel like this on your own.</p>' : '') +
+        '</div>' +
+        '<p class="v-note">' + esc(b.note) + '</p>' +
       '</section>' +
-      '<section data-section="Quote" id="quote">' +
-        '<h2 class="h2">Your quote</h2>' +
-        (k.quoteLead ? '<p class="lead">' + esc(k.quoteLead) + '</p>' : '') +
-        '<div class="group quote">' + rows + '</div>' +
-        '<p class="honest">The Reel works out to ₹' + (k.reel.price / median).toFixed(2) + ' per view and ₹' +
-          (k.reel.price / (median * eng)).toFixed(2) + ' per engagement, on ' + medianText + ' median views.</p>' +
-        (addons ? '<details class="addons" data-section="Add-ons"><summary data-label="Add-ons: Opened" data-category="Add-on"><span>Add-ons, if you need them</span>' + CHEV + '</summary>' + addons + '</details>' : '') +
-      '</section>' +
-      '<section data-section="How It Works" aria-label="How it works">' +
-        '<div class="steps4"><div><span>1</span>Brief</div><div><span>2</span>Script approval</div><div><span>3</span>Go live</div><div><span>4</span>Insights a week later</div></div>' +
-      '</section>' +
-      '<section data-section="Contact" class="contact">' +
-        '<div><h2>' + esc(k.closer || 'Let’s make it happen.') + '</h2><p>WhatsApp is the quickest way to reach me.</p></div>' +
-        '<div class="contact-actions"><a data-label="Contact: WhatsApp Button" data-category="Contact" class="btn btn-inv" href="' + waUrl + '" target="_blank" rel="noopener">' + WA_ICON + 'WhatsApp</a></div>' +
-        '<div class="links">' +
-          '<a data-label="Contact: WhatsApp Number" data-category="Contact" href="' + waUrl + '" target="_blank" rel="noopener">' + WA_ICON + '+91 76763 37153</a>' +
-          '<a data-label="Social: Instagram" data-category="Social" href="https://instagram.com/ogladkaa" target="_blank" rel="noopener">' + IG_ICON + '@ogladkaa</a>' +
+      '<section data-section="Collaboration" class="collab-sec">' +
+        '<h2 class="h2-sm">The collaboration</h2>' +
+        '<div class="deal">' +
+          '<div class="deal-main" data-label="Collab: Reel" data-category="Collab"><div class="deal-label">' + esc(k.reel.title) + '</div>' +
+            '<div class="deal-price">' + inr(price) + '</div><div class="deal-desc">' + esc(k.reel.desc) + '</div></div>' +
+          (rows ? '<div class="deal-sub">Add-ons</div><div class="deal-rows">' + rows + '</div>' : '') +
+          (priced ? '<div class="q-row q-total"><div class="row-title">Total</div><span class="q-amt">' + inr(total) + '</span></div>' : '') +
         '</div>' +
       '</section>' +
-      '<footer>Prepared ' + esc(niceDate(k.date)) + '. Prices in INR.</footer>';
+      '<section data-section="Contact" class="card-contact">' +
+        '<h2 class="h2-sm">Let’s talk</h2>' +
+        '<div class="c-rows">' +
+          '<a class="c-row" data-label="Contact: Call" data-category="Contact" href="tel:' + PHONE + '"><span>Call</span><b>' + PHONE_TEXT + '</b></a>' +
+          (k.email ? '<div class="c-row" data-label="Contact: Email" data-category="Contact"><span>Email</span><b class="sel">' + esc(k.email) + '</b></div>' : '') +
+        '</div>' +
+      '</section>' +
+      '<footer>OG Ladka, Bangalore. Prices in INR.</footer>';
     root.classList.add('kit-in');
-    document.title = 'OG Ladka for ' + k.forName;
+    document.title = 'OG Ladka media kit';
   }
 
   function broken() {
     root.innerHTML = '<section class="kit-state"><h1 class="h2">This link looks incomplete.</h1>' +
-      '<p>Part of the link may have been cut off when it was copied. Message me and I’ll send it again.</p>' +
-      '<a class="btn btn-primary" href="https://wa.me/' + WA + '" target="_blank" rel="noopener">WhatsApp me</a></section>';
-  }
-
-  // Two tabs at the top: Why me, Your quote. They scroll without touching the address bar,
-  // because "#quote" in the address would replace the key and break the link if it's forwarded.
-  function tabs() {
-    var t = Array.prototype.slice.call(document.querySelectorAll('.seg a'));
-    if (!t.length) return;
-    function on(id) { t.forEach(function (a) { a.classList.toggle('on', a.dataset.tab === id); }); }
-    t.forEach(function (a) {
-      a.addEventListener('click', function (e) {
-        e.preventDefault();
-        var s = document.getElementById(a.dataset.tab);
-        if (s) s.scrollIntoView({ behavior: 'smooth', block: 'start' });
-        on(a.dataset.tab);
-      });
-    });
-    if (!('IntersectionObserver' in window)) return;
-    var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) on(e.target.id); }); },
-      { rootMargin: '-35% 0px -60% 0px' });
-    ['why', 'quote'].forEach(function (id) { var s = document.getElementById(id); if (s) io.observe(s); });
+      '<p>Part of the link may have been cut off when it was copied. Call us and we’ll send it again.</p>' +
+      '<a class="btn btn-primary" href="tel:' + PHONE + '">Call ' + PHONE_TEXT + '</a></section>';
   }
 
   // Same tracker as the main kit (app.js), so visits land in the same sheet and the same emails.
-  // Extra here: every add-on opened and every quote line tapped shows up under Clicked.
+  // Extra here: lines of the collaboration they tap show up under Clicked.
   function track(k) {
     if (!LIVE) return;
     var ENDPOINT = 'https://script.google.com/macros/s/AKfycbx9f7u2SH-1THYGTdrqR1QUgxoNfD6T_UKiLgssP8Zp3-HpH8KDJcEgOy8mATVKxyPc/exec';
@@ -196,8 +190,6 @@
     function sectionNow() {
       var line = window.innerHeight * 0.4, name = '';
       secEls.forEach(function (s) { var r = s.getBoundingClientRect(); if (r.top <= line && r.bottom > line) name = s.getAttribute('data-section'); });
-      var ad = document.querySelector('.addons[open]');
-      if (ad && name === 'Quote') { var r2 = ad.getBoundingClientRect(); if (r2.top <= line && r2.bottom > line) name = 'Add-ons'; }
       return name;
     }
     setInterval(function () {
@@ -228,13 +220,12 @@
     document.addEventListener('click', function (e) {
       var a = e.target.closest('[data-label]'); if (!a) return;
       var label = a.getAttribute('data-label');
-      if (/^Nav:/.test(label)) return;
       if (clicks.indexOf(label) === -1) clicks.push(label);
       send();
     });
   }
 
   load().then(function (k) {
-    return fresh(k.numbers).then(function (n) { render(k, n); tabs(); track(k); });
+    return fresh(k.numbers).then(function (n) { render(k, n); track(k); });
   }).catch(function () { broken(); });
 })();
