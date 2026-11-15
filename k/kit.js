@@ -89,9 +89,10 @@
           '<a data-label="Social: YouTube" data-category="Social" aria-label="YouTube" href="https://www.youtube.com/@' + esc(k.contact.youtube) + '" target="_blank" rel="noopener">' + YT_ICON + '</a></div></div>' +
         '<div class="ig-top"><img class="ig-avatar" src="' + IMG + 'avatar.webp" alt="' + esc(k.contact.name) + '" />' +
           '<div class="ig-right"><div class="ig-name">' + esc(k.contact.name) + '</div><div class="ig-stats">' +
-            '<div><b>' + medianText + '</b><span>per Reel</span></div>' +
-            '<div><b>' + shortK(n.views30) + '</b><span>in 30 days</span></div>' +
-            '<div><b>' + (eng * 100).toFixed(1) + '%</b><span>engagement</span></div>' +
+            '<div><b>' + medianText + '</b><span>median views</span></div>' +
+            '<div><b>' + shortK(n.views30) + '</b><span>views in 30 days</span></div>' +
+            '<div><b class="good">' + n.nonFollowerPct.toFixed(1) + '%</b><span>non-follower views</span></div>' +
+            '<div><b class="good">' + (eng * 100).toFixed(1) + '%</b><span>engagement</span></div>' +
           '</div></div></div>' +
         '<div class="ig-bio"><div class="ig-cat">The person behind OG Ladka, Bengaluru</div><p>' + esc(k.pitch) + '</p><div class="ig-asof">Numbers as of ' + esc(niceDate(n.date)) + '</div></div>' +
       '</section>' +

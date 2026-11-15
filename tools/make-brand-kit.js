@@ -165,7 +165,7 @@ function textCopy(p) {
   const priced = p.items.filter((it) => it.price > 0);
   const total = p.reel.price + priced.reduce((s, it) => s + it.price, 0);
   const out = [
-    'Profile header: ogladkaa (verified), ' + p.contact.name + '. ' + medianText + ' per Reel, ' + sk(n.views30) + ' in 30 days, ' + (eng * 100).toFixed(1) + '% engagement (numbers as of ' + n.date + ').',
+    'Profile header: ogladkaa (verified), ' + p.contact.name + '. ' + medianText + ' median views, ' + sk(n.views30) + ' views in 30 days, ' + n.nonFollowerPct.toFixed(1) + '% non-follower views, ' + (eng * 100).toFixed(1) + '% engagement (numbers as of ' + n.date + ').',
     'Bio: The person behind OG Ladka, Bengaluru. ' + p.pitch,
     p.partnerships.length ? 'Made for brands recently: ' + p.partnerships.map(vid).join('; ') + '.' : '',
     'Audience favourites: ' + p.originals.map(vid).join('; ') + '.',
