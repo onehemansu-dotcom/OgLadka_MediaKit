@@ -89,11 +89,12 @@
         '<p class="pitch">' + esc(k.pitch) + '</p>' +
       '</section>' +
       '<section data-section="Numbers">' +
+        '<h2 class="h2-sm">Recent performance</h2>' +
         '<div class="band">' +
           '<div class="band-cell"><div class="band-num">' + medianText + '</div><div class="band-label">Median views per Reel</div></div>' +
           '<div class="band-cell"><div class="band-num">' + shortK(n.views30) + '</div><div class="band-label">Views in the last 30 days</div></div>' +
-          '<div class="band-cell"><div class="band-num">' + n.nonFollowerPct.toFixed(1) + '%</div><div class="band-label">Of views from new people</div></div>' +
-          '<div class="band-cell"><div class="band-num">' + (eng * 100).toFixed(1) + '%</div><div class="band-label">Engagement rate</div></div>' +
+          '<div class="band-cell"><div class="band-num good">' + n.nonFollowerPct.toFixed(1) + '%</div><div class="band-label">Of views from new people</div></div>' +
+          '<div class="band-cell"><div class="band-num good">' + (eng * 100).toFixed(1) + '%</div><div class="band-label">Engagement rate</div></div>' +
         '</div>' +
         '<p class="foot">Based on recent numbers, ' + esc(niceDate(n.date)) + '.</p>' +
       '</section>' +
@@ -103,6 +104,7 @@
       '<section data-section="Value">' +
         '<h2 class="h2-sm">What it works out to</h2>' +
         '<div class="v-card">' +
+          '<div class="v-formula"><span>' + inr(price) + ' Reel</span><i>\u00F7</i><span>' + medianText + ' median views</span></div>' +
           '<div class="v-three">' +
             '<div><b>₹' + (price / median).toFixed(2) + '</b><span>per view</span></div>' +
             '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
@@ -123,10 +125,16 @@
         '<h2 class="h2-sm">Contact details</h2>' +
         '<div class="c-rows">' + contact + '</div>' +
       '</section>' +
-      '<footer>Prices in INR.</footer>';
+      '<footer class="kit-foot">' +
+        '<a data-label="Social: Instagram" data-category="Social" href="https://www.instagram.com/' + esc(k.contact.instagram) + '/" target="_blank" rel="noopener">' + IG_ICON + 'Instagram</a>' +
+        '<a data-label="Social: YouTube" data-category="Social" href="https://www.youtube.com/@' + esc(k.contact.youtube) + '" target="_blank" rel="noopener">' + YT_ICON + 'YouTube</a>' +
+      '</footer>';
     root.classList.add('kit-in');
     document.title = 'OG Ladka media kit';
   }
+
+  var IG_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/></svg>';
+  var YT_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="4"/><path d="M10.2 9.4v5.2l4.4-2.6z" fill="currentColor"/></svg>';
 
   function broken() {
     root.innerHTML = '<section class="kit-state"><h1 class="h2">This link looks incomplete.</h1>' +

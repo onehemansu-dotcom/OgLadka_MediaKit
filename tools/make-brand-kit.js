@@ -111,7 +111,7 @@ const items = (spec.items || []).map((it) => {
 const partnerViews = numbers.partnerViews || {};
 const partnerships = (spec.partnerships || cat.partnerships).map((k) => {
   const p = PARTNERSHIPS[k] || stop('unknown partnership ' + k);
-  return Object.assign({}, p, { views: partnerViews[k] || 0 });
+  return Object.assign({}, p, { views: (spec.previewViews && spec.previewViews[k]) || partnerViews[k] || 0 });
 });
 const originals = (spec.originals || cat.originals).map((k) => ORIGINALS[k] || stop('unknown original ' + k));
 if (originals.length !== 3) stop('pick exactly 3 originals');

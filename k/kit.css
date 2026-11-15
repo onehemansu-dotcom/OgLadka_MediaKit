@@ -7,7 +7,12 @@ main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0
 .hello{font-size:17px;color:var(--sub)}
 .pitch{margin-top:18px;font-size:18px;line-height:1.55;max-width:32ch;text-wrap:pretty}
 
-/* Numbers band */
+/* Numbers band. Green marks the two numbers that show the audience is real and growing. */
+:root{--good-inv:#3DDC84}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--good-inv:#15803D}}
+:root[data-theme="dark"]{--good-inv:#15803D}
+.band-num.good{color:var(--good-inv)}
+#kit .band{margin-top:16px}
 .band{background:var(--inv);color:var(--inv-ink);border-radius:26px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:hidden}
 .band-cell{padding:22px 20px 20px}
 .band-cell:nth-child(odd){border-right:1px solid var(--inv-line)}
@@ -27,6 +32,9 @@ main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0
 
 /* What it works out to: numbers to scan, one line */
 .v-card{margin-top:16px;background:var(--surface);border-radius:24px;padding:24px 20px}
+.v-formula{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;padding-bottom:18px;margin-bottom:20px;border-bottom:1px solid var(--line);font-size:14px;color:var(--sub);font-variant-numeric:tabular-nums}
+.v-formula span{padding:6px 11px;border-radius:10px;background:var(--tile);color:var(--ink)}
+.v-formula i{font-style:normal;font-size:17px}
 .v-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 .v-three div{min-width:0}
 .v-three div + div{padding-left:14px;border-left:1px solid var(--line)}
@@ -59,7 +67,9 @@ main.kit{max-width:560px;gap:56px;padding-top:max(28px,env(safe-area-inset-top,0
 .c-row b{font-size:15px;font-weight:500;font-variant-numeric:tabular-nums;min-width:0;overflow-wrap:anywhere;text-align:right}
 .c-row a:hover{opacity:.7}
 .sel{user-select:all;-webkit-user-select:all}
-main.kit footer{margin-top:-24px}
+main.kit footer.kit-foot{margin-top:-16px;display:flex;justify-content:center;gap:28px;padding-top:24px;border-top:1px solid var(--line)}
+.kit-foot a{display:flex;align-items:center;gap:8px;min-height:44px;font-size:14px;color:var(--sub)}
+.kit-foot a:hover{color:var(--ink)}
 
 /* Loading and broken-link states */
 .kit-state{min-height:70vh;display:flex;flex-direction:column;justify-content:center;gap:14px;max-width:34ch}
