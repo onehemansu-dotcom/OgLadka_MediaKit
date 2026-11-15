@@ -101,17 +101,6 @@
       (k.partnerships && k.partnerships.length ?
         '<section data-section="Made For Brands"><h2 class="h2-sm">Made for brands recently</h2>' + videos(k.partnerships, n, 'Brand video') + '</section>' : '') +
       '<section data-section="Audience Favourites"><h2 class="h2-sm">Audience favourites</h2>' + videos(k.originals, n, 'Original') + '</section>' +
-      '<section data-section="Value">' +
-        '<h2 class="h2-sm">What it works out to</h2>' +
-        '<div class="v-card">' +
-          '<div class="v-formula"><span>' + inr(price) + ' Reel</span><i>\u00F7</i><span>' + medianText + ' median views</span></div>' +
-          '<div class="v-three">' +
-            '<div><b>₹' + (price / median).toFixed(2) + '</b><span>per view</span></div>' +
-            '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
-            '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
-          '</div>' +
-        '</div>' +
-      '</section>' +
       '<section data-section="Collaboration">' +
         '<h2 class="h2-sm">This collaboration</h2>' +
         '<div class="deal">' +
@@ -119,6 +108,17 @@
             '<div class="deal-price">' + inr(price) + '</div><div class="deal-desc">' + esc(k.reel.desc) + '</div></div>' +
           (rows ? '<div class="deal-sub">Add-ons</div><div class="deal-rows">' + rows + '</div>' : '') +
           (priced ? '<div class="q-row q-total"><div class="row-title">Total</div><span class="q-amt">' + inr(total) + '</span></div>' : '') +
+        '</div>' +
+        '<p class="deal-note">Prices cover only what was asked for in your message or email. Anything added later is quoted separately.</p>' +
+      '</section>' +
+      '<section data-section="Value">' +
+        '<h2 class="h2-sm">What it works out to</h2>' +
+        '<div class="v-card">' +
+          '<div class="v-three">' +
+            '<div><b>₹' + (price / median).toFixed(2) + '</b><span>per view</span></div>' +
+            '<div><b>₹' + (price / (median * eng)).toFixed(2) + '</b><span>per engagement</span></div>' +
+            '<div><b>₹' + Math.round(price / median * 1000) + '</b><span>per 1,000 views</span></div>' +
+          '</div>' +
         '</div>' +
       '</section>' +
       '<section data-section="Contact">' +
