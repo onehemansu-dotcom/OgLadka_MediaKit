@@ -227,12 +227,25 @@ function shell(opts) {
 <meta name="twitter:card" content="summary_large_image" />
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Geist:wght@300;400;500;600&display=swap" rel="stylesheet" />
+<style id="loader-critical">
+  html.is-loading,html.is-loading body{overflow:hidden}
+  #og-loader{position:fixed;inset:0;z-index:10000;display:grid;place-items:center;align-content:center;gap:14px;background:#F4F4F4;color:#141414;transition:opacity .35s ease,visibility .35s ease}
+  @media (prefers-color-scheme:dark){#og-loader{background:#000;color:#F2F2F2}}
+  #og-loader.done{opacity:0;visibility:hidden}
+  .ogl-mark{font-family:'Anton',Impact,'Arial Narrow Bold',sans-serif;font-size:48px;line-height:1;letter-spacing:.02em}
+  .ogl-bar{width:72px;height:3px;border-radius:3px;background:rgba(127,127,127,.2);overflow:hidden}
+  .ogl-bar span{display:block;width:40%;height:100%;border-radius:inherit;background:currentColor;animation:oglSlide 1s ease-in-out infinite}
+  @keyframes oglSlide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
+  @media (prefers-reduced-motion:reduce){.ogl-bar span{animation:none;width:100%}}
+</style>
 ${icons}${css}
 ${analytics}</head>
 <body>
+<div id="og-loader" aria-hidden="true"><div class="ogl-mark">OG</div><div class="ogl-bar"><span></span></div></div>
+<script>document.documentElement.classList.add('is-loading');setTimeout(function(){var l=document.getElementById('og-loader');if(l){l.classList.add('done');document.documentElement.classList.remove('is-loading');}},7000);</script>
 <main id="kit" class="single kit">
-  <section class="kit-state"><p>Loading.</p></section>
+  
 </main>
 <noscript><p style="padding:24px">This page needs JavaScript. Call +91 76763 37153.</p></noscript>
 <script id="kit-data" type="application/octet-stream"${opts.preview ? ' data-plain="1"' : ''}>${opts.data}</script>

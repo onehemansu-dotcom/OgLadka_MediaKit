@@ -31,6 +31,7 @@ const { chromium } = require('playwright');
   await page.goto('file://' + path.join(dir, 'index.html'), { waitUntil: 'load' });
   await page.addStyleTag({ content: faces + '\n.snap-note{max-width:560px;margin:0 auto;padding:14px 16px 0;font:12px/1.5 Geist,system-ui,sans-serif;color:#616161}' });
   await page.waitForSelector('.deal-price', { timeout: 10000 });
+  await page.evaluate(() => { const l = document.getElementById('og-loader'); if (l) l.remove(); document.documentElement.classList.remove('is-loading'); });
   if (note) {
     await page.evaluate((t) => {
       const d = document.createElement('div');

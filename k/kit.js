@@ -130,13 +130,40 @@
         '<a data-label="Social: YouTube" data-category="Social" href="https://www.youtube.com/@' + esc(k.contact.youtube) + '" target="_blank" rel="noopener">' + YT_ICON + 'YouTube</a>' +
         '</div>' +
       '</footer>';
-    root.classList.add('kit-in');
     document.title = 'OG Ladka media kit';
   }
 
   var VERIFIED = '<svg class="ig-tick" viewBox="0 0 40 40" aria-label="Verified" role="img"><path fill="#0095F6" d="M19.998 3.094 14.638 0l-2.972 5.15H5.432v6.354L0 14.64 3.094 20 0 25.359l5.432 3.137v5.905h5.975L14.638 40l5.36-3.094L25.358 40l3.232-5.6h6.162v-6.01L40 25.359 36.905 20 40 14.641l-5.248-3.03v-6.46h-6.419L25.358 0l-5.36 3.094Zm7.415 11.225 2.254 2.287-11.43 11.5-6.835-6.93 2.244-2.258 4.587 4.581 9.18-9.18Z"/></svg>';
   var IG_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true"><rect x="4" y="4" width="16" height="16" rx="5"/><circle cx="12" cy="12" r="3.8"/><circle cx="17.2" cy="6.8" r="0.9" fill="currentColor" stroke="none"/></svg>';
   var YT_ICON = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5.5" width="18" height="13" rx="4"/><path d="M10.2 9.4v5.2l4.4-2.6z" fill="currentColor"/></svg>';
+
+
+  // Loading screen (same as the link-in-bio site): the page shows only once the photo, the video
+  // covers and the fonts are ready, so a slow connection never sees half-built text.
+  var revealed = false;
+  function reveal() {
+    if (revealed) return;
+    function finish() {
+      if (revealed) return;
+      revealed = true;
+      var l = document.getElementById('og-loader');
+      if (l) { l.classList.add('done'); setTimeout(function () { if (l.parentNode) l.parentNode.removeChild(l); }, 450); }
+      document.documentElement.classList.remove('is-loading');
+      root.classList.add('kit-in');
+    }
+    function ready(img) {
+      return new Promise(function (res) {
+        var dec = function () { (img.decode ? img.decode() : Promise.resolve()).then(res, res); };
+        if (img.complete && img.naturalWidth) { dec(); return; }
+        img.addEventListener('load', dec, { once: true });
+        img.addEventListener('error', res, { once: true });
+      });
+    }
+    var imgs = Array.prototype.slice.call(root.querySelectorAll('img')).slice(0, 8);
+    var fonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+    Promise.all(imgs.map(ready).concat([fonts])).then(function () { requestAnimationFrame(finish); });
+    setTimeout(finish, 6000);
+  }
 
   function broken() {
     root.innerHTML = '<section class="kit-state"><h1 class="h2">This link looks incomplete.</h1>' +
@@ -225,7 +252,7 @@
   }
 
   load().then(function (k) {
-    if (k.expires && Date.now() >= new Date(k.expires + 'T00:00:00+05:30').getTime() && !window.KIT_IGNORE_EXPIRY) { expired(k); return; }
-    return fresh(k.numbers).then(function (n) { render(k, n); track(k); });
-  }).catch(function () { broken(); });
+    if (k.expires && Date.now() >= new Date(k.expires + 'T00:00:00+05:30').getTime() && !window.KIT_IGNORE_EXPIRY) { expired(k); reveal(); return; }
+    return fresh(k.numbers).then(function (n) { render(k, n); track(k); reveal(); });
+  }).catch(function () { broken(); reveal(); });
 })();
