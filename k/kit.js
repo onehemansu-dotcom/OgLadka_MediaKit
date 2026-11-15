@@ -96,7 +96,7 @@
         '<div class="ig-bio"><div class="ig-cat">The person behind OG Ladka, Bengaluru</div><p>' + esc(k.pitch) + '</p><div class="ig-asof">Numbers as of ' + esc(niceDate(n.date)) + '</div></div>' +
       '</section>' +
       (k.partnerships && k.partnerships.length ?
-        '<section data-section="Made For Brands"><h2 class="h2-sm">Made for brands recently</h2>' + videos(k.partnerships, n, 'Brand video') + '</section>' : '') +
+        '<section data-section="Made For Brands"><h2 class="h2-sm">Made for similar brands recently</h2>' + videos(k.partnerships, n, 'Brand video') + '</section>' : '') +
       '<section data-section="Audience Favourites"><h2 class="h2-sm">Audience favourites</h2>' + videos(k.originals, n, 'Original') + '</section>' +
       '<section data-section="Collaboration">' +
         '<h2 class="h2-sm">This collaboration</h2>' +

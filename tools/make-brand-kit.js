@@ -79,7 +79,9 @@ const BENCH = {
     note: 'Typical creator rate: finance creators charge 60 to 120% more than the ₹150 per 1,000 views most Indian creators get (upGrowth 2026, Kofluence 2025). Doing it yourself: an agency shoot and edit from ₹50,000 (Boss Wallah 2026) plus fintech ads on Instagram from ₹200 per 1,000 views (upGrowth 2026).' }
 };
 const DEFAULTS = {
-  care:      { partnerships: ['car101'], originals: ['matte', 'iridium', 'wrap'] },
+  // Brand videos only where there is a real collab in the same space: bike care (cleaning, polish, detailing: Car101)
+  // and automobile (KTM, Triumph, Royal Enfield). Lubricants, accessories and insurance get none until a real collab exists.
+  care:      { partnerships: [], originals: ['matte', 'iridium', 'wrap'] },
   auto:      { partnerships: ['ktm', 'triumph', 're'], originals: ['gear', 'engine', 'wrap'] },
   insurance: { partnerships: [], originals: ['insurance', 'wrap', 'engine'] }
 };
@@ -167,7 +169,7 @@ function textCopy(p) {
   const out = [
     'Profile header: ogladkaa (verified), ' + p.contact.name + '. ' + sk(n.views30) + ' views in 30 days, ' + n.nonFollowerPct.toFixed(1) + '% non-follower views, ' + (eng * 100).toFixed(1) + '% engagement (numbers as of ' + n.date + ').',
     'Bio: The person behind OG Ladka, Bengaluru. ' + p.pitch,
-    p.partnerships.length ? 'Made for brands recently: ' + p.partnerships.map(vid).join('; ') + '.' : '',
+    p.partnerships.length ? 'Made for similar brands recently: ' + p.partnerships.map(vid).join('; ') + '.' : '',
     'Audience favourites: ' + p.originals.map(vid).join('; ') + '.',
     'This collaboration: ' + p.reel.title + ' ' + inr(p.reel.price) + ' (' + p.reel.desc.replace(/\.$/, '') + ').' +
       (p.items.length ? ' Add-ons: ' + p.items.map((it) => it.title + ' ' + (it.price > 0 ? inr(it.price) : (it.note || 'Included'))).join('; ') + '.' : '') +
